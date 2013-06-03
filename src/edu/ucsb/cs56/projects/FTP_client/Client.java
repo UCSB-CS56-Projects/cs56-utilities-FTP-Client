@@ -36,7 +36,7 @@ public class Client {
 			}
 			client.retrieveFile(input, outputstream);			
 		}
-		catch (FTPConnectionClosedException e){ }
+		catch (FTPConnectionClosedException e){System.out.println("Connection closed"); }
 		catch (IOException e){	}
 		
 	}
