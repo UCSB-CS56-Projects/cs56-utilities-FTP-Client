@@ -33,14 +33,25 @@ public class Client {
 	}
 	
 	/** 
-          Download file user input on current directory. 
+    *	Change directory 
+    * 	@param target directory
     */
-	public void download()	{
-		System.out.println("input file to download:");
-		Scanner sc = new Scanner (System.in);
-		String input = sc.nextLine();
-		String[] filenames = input.split("/");
-		String filename = filenames[filenames.length-1];
+	
+	public void ChangeDirectory(String dir)	{
+		try {
+			changeWorkingDirectory(dir);
+		}
+		catch (IOException e){
+			
+		}
+	}
+	
+	/** 
+    *	Download file user input on current directory. 
+    * 	@param file name to download
+    */
+	public void download(string filename)	{
+		
 		try
 		{
 			File file = new File(filename);
@@ -56,13 +67,12 @@ public class Client {
 	}
 	
 	/** 
-         Connect to server using anonymous login
-    */
+     *  Connect to server using anonymous login
+     * 	@param host name
+     */
 	
-	public void connect ()	{
-		System.out.println("input host name:");
-		Scanner sc = new Scanner (System.in);
-		String host = sc.nextLine();
+	public void connect (String host)	{
+		
 		try {
 			client.connect(host);
 			System.out.println("Connected to " + host + ".");
@@ -84,12 +94,28 @@ public class Client {
 			System.out.println("Connection fail.");
 		}
 	}
+	
+	/** 
+     *  
+     * 	@param host name
+     */
+	
 	public static void main (String args[])	{
 		
 		System.out.println("Client start!");
 		Client newClient = new Client();
-		newClient.connect();
-		newClient.download();
+		
+		System.out.println("input host name:");
+		Scanner sc = new Scanner (System.in);
+		String host = sc.nextLine(); Zhao 
+		newClient.connect(host);
+		
+		System.out.println("input file to download:");
+		Scanner sc = new Scanner (System.in);
+		String input = sc.nextLine();
+		String[] filenames = input.split("/");
+		String filename = filenames[filenames.length-1];
+		newClient.download(filename);
 	}
 	
 }
