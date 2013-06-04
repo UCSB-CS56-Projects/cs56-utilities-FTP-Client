@@ -1,3 +1,5 @@
+
+
 package edu.ucsb.cs56.projects.FTP_client;
 
 import java.util.*;
@@ -15,12 +17,24 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPConnectionClosedException;
+
+/**
+ * An FTP client support anonymous login and download files on current directory.
+ * @version CS56, S13
+ * @author Wenjie Huang  
+ */
+
 public class Client {
 	private FTPClient client;
-	
+	/** Constructor
+    */
 	public Client()	{
 		client = new FTPClient();
 	}
+	
+	/** 
+          Download file user input on current directory. 
+    */
 	public void download()	{
 		System.out.println("input file to download:");
 		Scanner sc = new Scanner (System.in);
@@ -40,6 +54,11 @@ public class Client {
 		catch (IOException e){	}
 		
 	}
+	
+	/** 
+         Connect to server using anonymous login
+    */
+	
 	public void connect ()	{
 		System.out.println("input host name:");
 		Scanner sc = new Scanner (System.in);
