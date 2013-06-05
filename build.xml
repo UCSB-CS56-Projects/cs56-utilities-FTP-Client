@@ -1,0 +1,106 @@
+<project default="compile">
+
+	<!-- build.xml W13, CS56
+       	 name: Wenjie Huang -->
+
+	<property environment="env" />
+	<property name="pkgDir" value="edu/ucsb/cs56/projects/FTP_client" />
+	<property name="fullDir" value="edu.ucsb.cs56.projects.FTP_client" />
+	<!--<property name="mainClassGui" value="ClientGui" /> -->
+	<property name="mainClass" value="edu.ucsb.cs56.projects.FTP_client.Client" />
+	<property name="webRoot" value="${env.HOME}/public_html/cs56/S13/ProtossJane" />
+	<property name="webBaseURL" value="http://www.cs.ucsb.edu/~${env.USER}/cs56/S13/ProtossJane" />
+	<property name="projectName" value="cs56_math_conversion_quiz" />
+	<property name="javadocDest" value="${webRoot}/${projectName}" />
+	<property name="javadocURL" value="${webBaseURL}/${projectName}" />
+	<property name="libPath1" value="lib/junit-4.8.2.jar" />
+	<property name="libPath2" value="lib/commons-net-3.2.jar" />
+	 <path id="classpath">
+        <fileset dir="lib" includes="*.jar"/>
+    </path>
+
+
+	<target name="compile" description="Compile all source files">
+		<mkdir dir="build" />
+		<javac srcdir="src" destdir="build" debug="true" debuglevel="lines,source" includeantruntime="false" classpathref="classpath"/>
+
+	</target>
+
+
+	<target name="run" depends="compile" description="run the client command line interface">
+		<java classname="${mainClass}" >
+			<classpath>
+				<path refid = "classpath"/>
+				<pathelement location="build" />
+				</classpath >
+				</java>
+	</target>
+	
+	
+	<!--<target name="runGui" depends="compile" description="Run the Client GUI">
+		<java classname="${mainClassGui}" fork="true" classpath="build" />
+	</target> -->
+
+
+	<target name="clean" description="Delete non-source files">
+		<delete failonerror="false" verbose="true">
+			<fileset dir="build" includes="**/*.class"/>
+		</delete>
+		<delete dir="javadoc" quiet="true"/>
+		<delete dir="dist" quiet="true"/>
+		<delete dir="download" quiet="true"/>
+		<delete dir="temp" quiet="true"/>
+	</target>
+
+
+	<target name="javadoc" depends="compile" description="Generate and publish Javadocs">
+		<delete dir="javadoc" quiet="true" />
+		<javadoc destdir="javadoc" author="true" version="true" use="true">
+			<fileset dir="src" includes="**/*.java" />
+			<classpath>
+				<pathelement location="${libPath1}"  />
+			</classpath>
+		</javadoc>
+
+		<!-- delete the old javadoc -->
+		<delete quiet="true" dir="${javadocDest}" />
+
+		<!-- copy everything javadoc destination, and then make it readable -->
+		<copy todir="${javadocDest}">
+			<fileset dir="javadoc" />
+		</copy>
+
+		<chmod dir="${javadocDest}" perm="755" type="dir" includes="**" />
+		<chmod dir="${javadocDest}" perm="755" type="file" includes="**/*" />
+		<echo>Javadoc deployed to ${javadocURL}</echo>
+	</target>
+
+	
+	<target name="jar" depends="compile" description="Bundle jarfiles">
+		<mkdir dir="dist" />
+		<jar destfile="dist/${projectName}.jar" basedir="build">
+			<manifest>
+				<attribute name="Main-Class" value="${mainClass}"/>
+			</manifest>
+		</jar>
+	</target>
+
+
+	
+
+
+
+
+	
+	<target name="linenumbers" description="Creates a file containing all source files with line numbers">
+		<exec executable="bash">
+			<arg value="-c" />
+			<arg value='tree -ifQ src | grep \.java\"$ | xargs pr -n > numberedsource.txt' />                              
+	   </exec>                                                                                                         
+	</target>
+	
+	
+	
+  
+
+</project>
