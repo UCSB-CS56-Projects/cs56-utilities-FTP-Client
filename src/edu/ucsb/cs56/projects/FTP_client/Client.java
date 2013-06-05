@@ -39,19 +39,32 @@ public class Client {
 	
 	public void ChangeDirectory(String dir)	{
 		try {
-			changeWorkingDirectory(dir);
+			client.changeWorkingDirectory(dir);
 		}
-		catch (IOException e){
-			
-		}
+		catch (IOException e){ }
+	}
+	
+	/** 
+    *	Show file list on current directory 
+    */
+	
+	public void listFile()	{
+		System.out.println("*************File List************");
+		try {
+		FTPFile [] files = client.listFiles();
+		for(FTPFile f : files)	
+			System.out.println(f.toString());	}
+		catch (IOException e)	{}
 	}
 	
 	/** 
     *	Download file user input on current directory. 
     * 	@param file name to download
     */
-	public void download(string filename)	{
+	public void download(String input)	{
 		
+		String[] filenames = input.split("/");
+		String filename = filenames[filenames.length-1];
 		try
 		{
 			File file = new File(filename);
@@ -85,10 +98,7 @@ public class Client {
 				System.err.println("FTP server refused connection.");
 				System.exit(1);
 				}
-			System.out.println("*************File List************");
-			FTPFile [] files = client.listFiles();
-			for(FTPFile f : files)	
-				System.out.println(f.toString());
+			
 			}
 		catch(IOException e) {
 			System.out.println("Connection fail.");
@@ -107,15 +117,13 @@ public class Client {
 		
 		System.out.println("input host name:");
 		Scanner sc = new Scanner (System.in);
-		String host = sc.nextLine(); Zhao 
+		String host = sc.nextLine(); 
 		newClient.connect(host);
-		
+		newClient.listFile();
 		System.out.println("input file to download:");
-		Scanner sc = new Scanner (System.in);
+		sc = new Scanner (System.in);
 		String input = sc.nextLine();
-		String[] filenames = input.split("/");
-		String filename = filenames[filenames.length-1];
-		newClient.download(filename);
+		newClient.download(input);
 	}
 	
 }
