@@ -48,13 +48,15 @@ public class Client {
     *	Show file list on current directory 
     */
 	
-	public void listFile()	{
+	public FTPFile listFile()	{
 		System.out.println("*************File List************");
+		FTPFile [] files;
 		try {
-		FTPFile [] files = client.listFiles();
+		files = client.listFiles();
 		for(FTPFile f : files)	
 			System.out.println(f.toString());	}
 		catch (IOException e)	{}
+		return files;
 	}
 	
 	/** 
