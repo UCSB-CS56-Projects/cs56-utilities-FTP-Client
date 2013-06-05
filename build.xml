@@ -6,7 +6,7 @@
 	<property environment="env" />
 	<property name="pkgDir" value="edu/ucsb/cs56/projects/FTP_client" />
 	<property name="fullDir" value="edu.ucsb.cs56.projects.FTP_client" />
-	<!--<property name="mainClassGui" value="QuizGui" /> -->
+	<!--<property name="mainClassGui" value="ClientGui" /> -->
 	<property name="mainClass" value="edu.ucsb.cs56.projects.FTP_client.Client" />
 	<property name="webRoot" value="${env.HOME}/public_html/cs56/S13/ProtossJane" />
 	<property name="webBaseURL" value="http://www.cs.ucsb.edu/~${env.USER}/cs56/S13/ProtossJane" />
@@ -27,7 +27,7 @@
 	</target>
 
 
-	<target name="run" depends="compile" description="Run the Quiz command line interface">
+	<target name="run" depends="compile" description="run the client command line interface">
 		<java classname="${mainClass}" >
 			<classpath>
 				<path refid = "classpath"/>
@@ -37,8 +37,8 @@
 	</target>
 	
 	
-	<!--<target name="runGui" depends="compile" description="Run the main Quiz GUI">
-		<java classname="${fullDir}.${mainClassGui}" fork="true" classpath="build" />
+	<!--<target name="runGui" depends="compile" description="Run the Client GUI">
+		<java classname="${mainClassGui}" fork="true" classpath="build" />
 	</target> -->
 
 
@@ -86,47 +86,7 @@
 	</target>
 
 
-	<target name="test" depends="compile" description="Run the JUnit test suite">
-		<junit haltonerror="no" haltonfailure="no">
-			<classpath>
-				<pathelement location="${libPath1}"  />
-				<pathelement location="build" />
-			</classpath>
-
-			<batchtest fork="yes">
-				<fileset dir="src">
-					<!-- this will pick up every class with a name ending in Test -->
-					<include name="**/*Test.java" />
-				</fileset>
-			</batchtest>
-
-			<formatter type="plain" usefile="false" />
-		</junit>
-	</target>
-
 	
-	<target name="download" description="Publish compressed source bundle">
-		<delete quiet="true">
-			<fileset dir="temp" includes="**/*"/>
-			<fileset dir="download" includes="**/*"/>
-		</delete>
-		
-		<mkdir dir="download"/>
-		<mkdir dir="temp"/>
-		<mkdir dir="temp/${projectPath}"/>
-		
-		<copy todir="temp/${projectPath}">
-			<fileset dir="." excludes="build/**, javadoc/**, **/*~, temp/**, dist/**, download/**"/>
-		</copy>
-		
-		<tar destfile="temp/${projectName}.tar" basedir="temp" includes="${projectPath}/**"/>
-		<gzip zipfile="download/${projectName}.tgz" src="temp/${projectName}.tar"/>
-		<zip destfile="download/${projectName}.zip" basedir="temp" includes="${projectPath}/**"/>
-		
-		<delete quiet="true">
-			<fileset dir="temp" includes="**/*"/>
-		</delete>
-	</target>
 
 
 
