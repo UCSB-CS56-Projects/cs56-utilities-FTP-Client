@@ -48,9 +48,9 @@ public class Client {
     *	Show file list on current directory 
     */
 	
-	public FTPFile listFile()	{
+	public FTPFile[] listFile()	{
 		System.out.println("*************File List************");
-		FTPFile [] files;
+		FTPFile [] files=null;
 		try {
 		files = client.listFiles();
 		for(FTPFile f : files)	
@@ -112,7 +112,7 @@ public class Client {
      * 	@param host name
      */
 	
-	public static void main (String args[])	{
+	public static void main (String[] args)	{
 		
 		System.out.println("Client start!");
 		Client newClient = new Client();

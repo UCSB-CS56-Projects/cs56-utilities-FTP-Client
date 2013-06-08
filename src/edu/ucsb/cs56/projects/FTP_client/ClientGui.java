@@ -30,7 +30,7 @@ public class ClientGui {
 		 logoutButton	= new JButton("Logout");
 		 hostLabel		= new JLabel("Host: ");
 		 fileListLabel	= new JLabel("File List");
-		 hostField 		= new JTextField(50);
+		 hostField 		= new JTextField(20);
 		 newClient 		= new Client();
 		
 	}
@@ -38,6 +38,20 @@ public class ClientGui {
 	public void buildGui()	{
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.Y_AXIS));
+		
+		loginPanel.add(hostLabel);
+		loginPanel.add(hostField);
+		//loginPanel.setSize(300, 100);
+		frame.getContentPane().add(BorderLayout.CENTER, displayPanel);
+		frame. setSize(500,400);
+		frame.setVisible(true);
+	}
+	
+	public static void main( String[] args )	{
+		ClientGui gui = new ClientGui();
+		gui.buildGui();
 		
 	}
 	
