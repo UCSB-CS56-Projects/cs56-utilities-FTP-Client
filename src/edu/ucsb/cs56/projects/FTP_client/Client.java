@@ -86,7 +86,7 @@ public class Client {
      * 	@param host name
      */
 	
-	public void connect (String host)	{
+	public boolean connect (String host)	{
 		
 		try {
 			client.connect(host);
@@ -104,7 +104,9 @@ public class Client {
 			}
 		catch(IOException e) {
 			System.out.println("Connection fail.");
+			return false;
 		}
+		return true;
 	}
 	
 	/** 
