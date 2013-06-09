@@ -26,10 +26,12 @@ import org.apache.commons.net.ftp.FTPConnectionClosedException;
 
 public class Client {
 	private FTPClient client;
+	private FTPFile[] fileList;
 	/** Constructor
     */
 	public Client()	{
 		client = new FTPClient();
+		fileList = null;
 	}
 	
 	/** 
@@ -50,13 +52,25 @@ public class Client {
 	
 	public FTPFile[] listFile()	{
 		System.out.println("*************File List************");
-		FTPFile [] files=null;
+		fileList=null;
 		try {
-		files = client.listFiles();
-		for(FTPFile f : files)	
+		fileList = client.listFiles();
+		for(FTPFile f : fileList)	
 			System.out.println(f.toString());	}
 		catch (IOException e)	{}
-		return files;
+		return fileList;
+	}
+	
+	/** 
+    *	Determine if the file is a regular file
+    */
+	
+	public boolean isFile(String filename)	{
+		for(FTPFile f : fileList)
+			if(filename.equals(f.getName())&&f.isFile())
+				return true;
+		return false;
+		
 	}
 	
 	/** 
@@ -67,6 +81,7 @@ public class Client {
 		
 		String[] filenames = input.split("/");
 		String filename = filenames[filenames.length-1];
+		if(isFile(filename))	{
 		try
 		{
 			File file = new File(filename);
@@ -78,6 +93,12 @@ public class Client {
 		}
 		catch (FTPConnectionClosedException e){System.out.println("Connection closed"); }
 		catch (IOException e){	}
+		
+		System.out.println("Download "+filename);
+	
+		}
+		
+		else System.out.println(filename+" is not a file.");
 		
 	}
 	

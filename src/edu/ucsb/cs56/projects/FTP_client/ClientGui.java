@@ -24,6 +24,7 @@ public class ClientGui {
 	private JScrollPane scroller	;
 	private JList fileList			;
 	private String selectedFile		;
+	private Vector<String> lists	;
 	private Client newClient 		;
 	
 	public ClientGui()	{
@@ -40,6 +41,8 @@ public class ClientGui {
 		 String[] ss = {"a","b","c","d","e"};
 		 fileList		= new JList();
 		 scroller		= new JScrollPane(fileList);
+		 selectedFile	= null;
+		 lists			= new Vector<String>();
 		
 		 
 		 newClient 		= new Client();
@@ -77,6 +80,8 @@ public class ClientGui {
 		frame.setVisible(true);
 		
 		connectButton.addActionListener(new loginListener());
+		fileList.addMouseListener(new selectListener());
+		downloadButton.addActionListener(new downloadListener());
 		
 	}
 	
@@ -87,8 +92,8 @@ public class ClientGui {
 			if(newClient.connect(hostname))	{
 			
 			loginPanel.setVisible(false);
-			Vector<String> lists = new Vector<String>();
 			FTPFile[] file = newClient.listFile();
+			lists.clear();
 			for(FTPFile f : file)
 				lists.add(f.toString());
 			fileList.setListData(lists);
@@ -97,6 +102,36 @@ public class ClientGui {
 			}
 		}
 		
+	}
+	
+	class selectListener implements MouseListener	{
+		
+		public void mouseClicked(MouseEvent e)	{
+			int index = fileList.locationToIndex(e.getPoint());
+			
+			if(index>=0)	{
+				String[] file = lists.get(index).split(" ");
+				selectedFile = file[file.length-1];
+				System.out.println(selectedFile);
+			}
+		
+		}
+
+		
+		public void mouseEntered(MouseEvent e)	{	}
+		
+		public void mouseExited(MouseEvent e)	{	} 
+		
+		public void mousePressed(MouseEvent e)	{	}
+		
+		public void mouseReleased(MouseEvent e) {	}
+	}
+	
+	class downloadListener implements ActionListener	{
+		public void actionPerformed(ActionEvent e) {
+			if(selectedFile!=null)	
+				newClient.download(selectedFile);
+		}
 	}
 	
 	public static void main( String[] args )	{
