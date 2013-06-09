@@ -6,8 +6,8 @@ import java.util.*;
 import java.awt.event.*;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPReply;
 import org.apache.commons.net.ftp.FTPFile;
+import java.io.IOException;
 
 public class ClientGui {
 	
@@ -58,7 +58,6 @@ public class ClientGui {
 		
 		
 		scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		//scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		downloadPanel.add(fileListLabel);
 		downloadPanel.add(scroller);
 		fileList.setVisibleRowCount(3);
@@ -72,7 +71,7 @@ public class ClientGui {
 		loginPanel.add(connectButton);
 
 		displayPanel.add(downloadPanel);
-		//downloadPanel.setVisible(false);
+		downloadPanel.setVisible(false);
 		displayPanel.add(Box.createVerticalGlue());
 		displayPanel.add(loginPanel);
 		frame.getContentPane().add(BorderLayout.CENTER, displayPanel);
@@ -82,6 +81,7 @@ public class ClientGui {
 		connectButton.addActionListener(new loginListener());
 		fileList.addMouseListener(new selectListener());
 		downloadButton.addActionListener(new downloadListener());
+		logoutButton.addActionListener(new logoutListener());
 		
 	}
 	
@@ -112,7 +112,7 @@ public class ClientGui {
 			if(index>=0)	{
 				String[] file = lists.get(index).split(" ");
 				selectedFile = file[file.length-1];
-				System.out.println(selectedFile);
+				System.out.println("select "+selectedFile);
 			}
 		
 		}
@@ -132,6 +132,16 @@ public class ClientGui {
 			if(selectedFile!=null)	
 				newClient.download(selectedFile);
 		}
+	}
+	
+	class logoutListener implements ActionListener	{
+		public void actionPerformed(ActionEvent e) {
+					newClient.logout();
+					downloadPanel.setVisible(false);
+					loginPanel.setVisible(true);
+				
+			}
+		
 	}
 	
 	public static void main( String[] args )	{

@@ -132,8 +132,15 @@ public class Client {
 	
 	/** 
      *  
-     * 	@param host name
+     * 	
      */
+     
+    public void logout()	{
+			try {
+					client.logout();
+				} 
+			catch(IOException ioe) {	}
+	}
 	
 	public static void main (String[] args)	{
 		
