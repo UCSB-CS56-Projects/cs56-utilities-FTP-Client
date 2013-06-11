@@ -26,10 +26,12 @@ import org.apache.commons.net.ftp.FTPConnectionClosedException;
 
 public class Client {
 	private FTPClient client;
+	private FTPFile[] fileList;
 	/** Constructor
     */
 	public Client()	{
 		client = new FTPClient();
+		fileList = null;
 	}
 	
 	/** 
@@ -48,13 +50,27 @@ public class Client {
     *	Show file list on current directory 
     */
 	
-	public void listFile()	{
+	public FTPFile[] listFile()	{
 		System.out.println("*************File List************");
+		fileList=null;
 		try {
-		FTPFile [] files = client.listFiles();
-		for(FTPFile f : files)	
+		fileList = client.listFiles();
+		for(FTPFile f : fileList)	
 			System.out.println(f.toString());	}
 		catch (IOException e)	{}
+		return fileList;
+	}
+	
+	/** 
+    *	Determine if the file is a regular file
+    */
+	
+	public boolean isFile(String filename)	{
+		for(FTPFile f : fileList)
+			if(filename.equals(f.getName())&&f.isFile())
+				return true;
+		return false;
+		
 	}
 	
 	/** 
@@ -65,6 +81,7 @@ public class Client {
 		
 		String[] filenames = input.split("/");
 		String filename = filenames[filenames.length-1];
+		if(isFile(filename))	{
 		try
 		{
 			File file = new File(filename);
@@ -77,6 +94,12 @@ public class Client {
 		catch (FTPConnectionClosedException e){System.out.println("Connection closed"); }
 		catch (IOException e){	}
 		
+		System.out.println("Download "+filename);
+	
+		}
+		
+		else System.out.println(filename+" is not a file.");
+		
 	}
 	
 	/** 
@@ -84,7 +107,7 @@ public class Client {
      * 	@param host name
      */
 	
-	public void connect (String host)	{
+	public boolean connect (String host)	{
 		
 		try {
 			client.connect(host);
@@ -102,15 +125,24 @@ public class Client {
 			}
 		catch(IOException e) {
 			System.out.println("Connection fail.");
+			return false;
 		}
+		return true;
 	}
 	
 	/** 
      *  
-     * 	@param host name
+     * 	
      */
+     
+    public void logout()	{
+			try {
+					client.logout();
+				} 
+			catch(IOException ioe) {	}
+	}
 	
-	public static void main (String args[])	{
+	public static void main (String[] args)	{
 		
 		System.out.println("Client start!");
 		Client newClient = new Client();

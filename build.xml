@@ -6,7 +6,7 @@
 	<property environment="env" />
 	<property name="pkgDir" value="edu/ucsb/cs56/projects/FTP_client" />
 	<property name="fullDir" value="edu.ucsb.cs56.projects.FTP_client" />
-	<!--<property name="mainClassGui" value="ClientGui" /> -->
+	<property name="mainClassGui" value="edu.ucsb.cs56.projects.FTP_client.ClientGui" />
 	<property name="mainClass" value="edu.ucsb.cs56.projects.FTP_client.Client" />
 	<property name="webRoot" value="${env.HOME}/public_html/cs56/S13/ProtossJane" />
 	<property name="webBaseURL" value="http://www.cs.ucsb.edu/~${env.USER}/cs56/S13/ProtossJane" />
@@ -37,9 +37,15 @@
 	</target>
 	
 	
-	<!--<target name="runGui" depends="compile" description="Run the Client GUI">
-		<java classname="${mainClassGui}" fork="true" classpath="build" />
-	</target> -->
+	<target name="runGui" depends="compile" description="Run the Client GUI">
+		<java classname="${mainClassGui}" fork="true">
+		<classpath>
+			<path refid = "classpath"/>
+			<pathelement location="build" />
+		</classpath>
+		
+		 </java>
+	</target>
 
 
 	<target name="clean" description="Delete non-source files">
