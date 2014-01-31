@@ -9,3 +9,5 @@ Usage: ant run to start the client. For the first prompt, type in ftp host name,
 
 
 GUI: After connect to ftp server, select the file you want and click download. Note: only support download file, not directory.
+
+![](http://i.imgur.com/uUj9DH2.jpg)
