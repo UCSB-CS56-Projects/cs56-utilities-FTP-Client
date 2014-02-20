@@ -26,16 +26,21 @@ public class ClientGui {
 	private String selectedFile		;
 	private Vector<String> lists	;
 	private Client newClient 		;
+    private JLabel statusLabel;
+    private JPanel statusPanel;
+    private ImageIcon statusIcon;
 	
 	public ClientGui()	{
 		 frame 			= new JFrame("FTP Client");
 		 displayPanel	= new JPanel();
 		 loginPanel 	= new JPanel();
 		 downloadPanel 	= new JPanel();
+         statusPanel = new JPanel();
 		 connectButton	= new JButton("Connect");
 		 downloadButton	= new JButton("Download");
 		 logoutButton	= new JButton("Logout");
 		 hostLabel		= new JLabel("Host: ");
+         statusLabel = new JLabel(""); // Label that indicates program/connection status
 		 fileListLabel	= new JLabel("File List");
 		 hostField 		= new JTextField(20);
 		 String[] ss = {"a","b","c","d","e"};
@@ -43,6 +48,7 @@ public class ClientGui {
 		 scroller		= new JScrollPane(fileList);
 		 selectedFile	= null;
 		 lists			= new Vector<String>();
+		statusIcon = new ImageIcon("./assets/dialog-error.png");
 		
 		 
 		 newClient 		= new Client();
@@ -55,6 +61,7 @@ public class ClientGui {
 		
 		displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.Y_AXIS));
 		downloadPanel.setLayout(new BoxLayout(downloadPanel, BoxLayout.Y_AXIS));
+        statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.Y_AXIS));
 		
 		
 		scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -65,10 +72,12 @@ public class ClientGui {
 		downloadPanel.add(downloadButton);
 		downloadPanel.add(Box.createVerticalStrut(5));
 		downloadPanel.add(logoutButton);
-		
+
+        frame.getContentPane().add(BorderLayout.SOUTH, statusPanel);
 		loginPanel.add(hostLabel);
 		loginPanel.add(hostField);
 		loginPanel.add(connectButton);
+        statusPanel.add(statusLabel);
 
 		displayPanel.add(downloadPanel);
 		downloadPanel.setVisible(false);
@@ -91,15 +100,22 @@ public class ClientGui {
 			
 			if(newClient.connect(hostname))	{
 			
-			loginPanel.setVisible(false);
-			FTPFile[] file = newClient.listFile();
-			lists.clear();
-			for(FTPFile f : file)
-				lists.add(f.toString());
-			fileList.setListData(lists);
-			downloadPanel.setVisible(true);
+                loginPanel.setVisible(false);
+                FTPFile[] file = newClient.listFile();
+                lists.clear();
+                for(FTPFile f : file)
+                    lists.add(f.toString());
+                fileList.setListData(lists);
+                downloadPanel.setVisible(true);
+                statusLabel.setText("Connected to " + hostname);
+                statusLabel.setIcon(null);
 			
 			}
+            else {
+				// Update statusLabel with an error message and error icon on connection failure
+                statusLabel.setText("Error connecting to " + hostname + ", ensure the address is correct");
+                statusLabel.setIcon(statusIcon);
+            }
 		}
 		
 	}
@@ -139,6 +155,8 @@ public class ClientGui {
 					newClient.logout();
 					downloadPanel.setVisible(false);
 					loginPanel.setVisible(true);
+                    statusLabel.setText("");
+                    statusLabel.setIcon(null);
 				
 			}
 		
