@@ -28,16 +28,16 @@ public class Client {
 	private FTPClient client;
 	private FTPFile[] fileList;
 	/** Constructor
-    */
+	*/
 	public Client()	{
 		client = new FTPClient();
 		fileList = null;
 	}
 	
 	/** 
-    *	Change directory 
-    * 	@param target directory
-    */
+	*	Change directory
+	* 	@param target directory
+	*/
 	
 	public void ChangeDirectory(String dir)	{
 		try {
@@ -47,23 +47,24 @@ public class Client {
 	}
 	
 	/** 
-    *	Show file list on current directory 
-    */
+	*	Show file list on current directory
+	*/
 	
 	public FTPFile[] listFile()	{
 		System.out.println("*************File List************");
 		fileList=null;
 		try {
-		fileList = client.listFiles();
-		for(FTPFile f : fileList)	
-			System.out.println(f.toString());	}
+			fileList = client.listFiles();
+			for(FTPFile f : fileList)
+				System.out.println(f.toString() );
+		}
 		catch (IOException e)	{}
 		return fileList;
 	}
 	
 	/** 
-    *	Determine if the file is a regular file
-    */
+	*	Determine if the file is a regular file
+	*/
 	
 	public boolean isFile(String filename)	{
 		for(FTPFile f : fileList)
@@ -74,38 +75,35 @@ public class Client {
 	}
 	
 	/** 
-    *	Download file user input on current directory. 
-    * 	@param file name to download
-    */
+	*	Download file user input on current directory.
+	* 	@param file name to download
+	*/
 	public void download(String input)	{
 		
 		String[] filenames = input.split("/");
 		String filename = filenames[filenames.length-1];
 		if(isFile(filename))	{
-		try
-		{
-			File file = new File(filename);
-			OutputStream outputstream = new FileOutputStream(file);
-			if (!file.exists()) {
-				file.createNewFile();
+			try	{
+				File file = new File(filename);
+				OutputStream outputstream = new FileOutputStream(file);
+				if (!file.exists()) {
+					file.createNewFile();
+				}
+				client.retrieveFile(input, outputstream);
 			}
-			client.retrieveFile(input, outputstream);			
+			catch (FTPConnectionClosedException e){System.out.println("Connection closed"); }
+			catch (IOException e){	}
+
+			System.out.println("Download "+filename);
 		}
-		catch (FTPConnectionClosedException e){System.out.println("Connection closed"); }
-		catch (IOException e){	}
-		
-		System.out.println("Download "+filename);
-	
-		}
-		
 		else System.out.println(filename+" is not a file.");
 		
 	}
 	
 	/** 
-     *  Connect to server using anonymous login
-     * 	@param host name
-     */
+	 *  Connect to server using anonymous login
+	 * 	@param host name
+	 */
 	
 	public boolean connect (String host)	{
 		
@@ -131,15 +129,15 @@ public class Client {
 	}
 	
 	/** 
-     *  
-     * 	
-     */
-     
-    public void logout()	{
-			try {
-					client.logout();
-				} 
-			catch(IOException ioe) {	}
+	 *
+	 *
+	 */
+
+	public void logout() {
+		try {
+			client.logout();
+		}
+		catch(IOException ioe) {	}
 	}
 	
 	public static void main (String[] args)	{
@@ -157,5 +155,4 @@ public class Client {
 		String input = sc.nextLine();
 		newClient.download(input);
 	}
-	
 }
