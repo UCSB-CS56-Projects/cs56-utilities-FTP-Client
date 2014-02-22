@@ -50,7 +50,7 @@ public class ClientGui {
 		selectedFile	= null;
 		lists			= new Vector<String>();
 		statusIcon = new ImageIcon("./assets/dialog-error.png");
-		newClient 		= new Client();
+		newClient 		= new FtpClient();
 		
 	}
 	
@@ -96,13 +96,14 @@ public class ClientGui {
 		public void actionPerformed(ActionEvent e) {		
 			String hostname = hostField.getText();
 			
-			if(newClient.connect(hostname))	{
+			if(newClient.connect(hostname, "anonymous", "anonymous"))	{
 			
 				loginPanel.setVisible(false);
-				FTPFile[] file = newClient.listFile();
+				String[] file = newClient.listFile();
 				lists.clear();
-				for(FTPFile f : file)
-					lists.add(f.toString());
+				for(String f : file)
+					lists.add(f);
+
 				fileList.setListData(lists);
 				downloadPanel.setVisible(true);
 				statusLabel.setText("Connected to " + hostname);
