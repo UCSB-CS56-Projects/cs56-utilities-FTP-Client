@@ -25,34 +25,47 @@ import org.apache.commons.net.ftp.FTPConnectionClosedException;
  */
 
 
-public interface Client {
+public abstract class Client {
+
+	protected String hostname;
+	protected String username;
+	protected String password;
+	protected int port;
 
 	/**
 	*	Change directory
 	* 	@param target directory
 	*/
-	public void ChangeDirectory(String dir);
+	public abstract void ChangeDirectory(String dir);
 
 
 	/**
 	 * List all files in current directory
 	 * @return String array of file names
 	 */
-	public String[] listFile();
+	public abstract String[] listFile();
 
 
 	/** 
 	*	Determine if the file is a regular file
 	*/
-	public boolean isFile(String filename);
+	public abstract boolean isFile(String filename);
 
 
 	/** 
 	*	Download file user input on current directory.
 	* 	@param file name to download
 	*/
-	public void download(String input);
+	public abstract void download(String input);
 
+	/**
+	 * Establish connection to remote host
+	 * @param url url to parse into username, host, and port if applicable
+	 * @param password password to authenticate with
+	 * @return true if the connection was successful, false if unsuccessful
+	 */
+
+	public abstract boolean connect(String url, String password);
 
 	/**
 	 * Establish connection to remote host
@@ -61,11 +74,42 @@ public interface Client {
 	 * @param password password to authenticate with
 	 * @return true if the connection was successful, false if unsuccessful
 	 */
-	public boolean connect (String host, String username, String password);
+
+	public abstract boolean connect(String host, String username, String password);
+
 
 
 	/**
 	 * Explicitly close the connection the remote host
 	 */
-	public void logout();
+	public abstract void logout();
+
+	/**
+	 * Takes a valid RFC 1738 or RFC 3986 URL/URI in the form of
+	 * user:password@host:port/path and parses it for connection information
+	 * @param url Any valid RFC 1738/3986 URL/URI
+	 */
+	public void parseURL(String url) {
+		if (url.contains("@")) {
+			String[] parseString = url.split("[@]+");
+			username = parseString[0];
+
+			if (parseString[1].contains(":")) {
+				parseString = parseString[1].split("[:]+");
+				hostname = parseString[0];
+				port = Integer.parseInt(parseString[1]);
+			}
+			else {
+				hostname = parseString[1];
+			}
+		}
+		else if (url.contains(":")) {
+			String[] parseString = url.split("[:]+");
+			hostname = parseString[0];
+			port = Integer.parseInt(parseString[1]);
+		}
+		else hostname = url;
+	}
+
+
 }

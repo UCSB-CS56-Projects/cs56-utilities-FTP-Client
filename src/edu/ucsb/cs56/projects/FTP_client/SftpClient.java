@@ -11,7 +11,7 @@ import java.util.Vector;
  * A class to support the SFTP protocol
  * @author David Coffill
  */
-public class SftpClient implements Client {
+public class SftpClient extends Client {
 	private JSch client;
 	ChannelSftp cSftp;
 	private Vector<ChannelSftp.LsEntry> fileList;
@@ -21,6 +21,7 @@ public class SftpClient implements Client {
 		client = new JSch();
 		fileList = null;
 		stringFileList = null;
+		port = 22; // Set default SSH/SFTP port number
 	}
 
 	/**
@@ -79,6 +80,12 @@ public class SftpClient implements Client {
 
 		return true;
 	}
+
+	public boolean connect (String url, String password) {
+			parseURL(url);
+		return connect(hostname, username, password);
+	}
+
 
 	/**
 	 * Change directory on the remote host
@@ -141,6 +148,7 @@ public class SftpClient implements Client {
 	public void logout() {
 		cSftp.disconnect();
 	}
+
 
 	public static void main (String[] args)	{
 

@@ -25,7 +25,7 @@ import org.apache.commons.net.ftp.FTPConnectionClosedException;
  * @author David Coffill
  */
 
-public class FtpClient implements Client {
+public class FtpClient extends Client {
 	private FTPClient client;
 	private FTPFile[] fileList;
 	private String[] stringFileList;
@@ -35,6 +35,8 @@ public class FtpClient implements Client {
 		client = new FTPClient();
 		fileList = null;
 		stringFileList = null;
+		username = "anonymous";
+		password = "anonymous";
 	}
 
 	/**
@@ -109,16 +111,19 @@ public class FtpClient implements Client {
 
 	}
 
-	/**
-	 *  Connect to server using anonymous login
-	 * 	@param host name
+	 /**
+	 * Establish connection to remote host
+	 * @param hostname hostname of remote host (such as csil.cs.ucsb.edu)
+	 * @param username username to authenticate with
+	 * @param password password to authenticate with
+	 * @return true if the connection was successful, false if unsuccessful
 	 */
 
-	public boolean connect (String host, String username, String password)	{
+	public boolean connect (String hostname, String username, String password)	{
 
 		try {
-			client.connect(host);
-			System.out.println("Connected to " + host + ".");
+			client.connect(hostname);
+			System.out.println("Connected to " + hostname + ".");
 			System.out.println(client.getReplyString());
 			client.login("anonymous", "anonymous");
 
@@ -135,6 +140,11 @@ public class FtpClient implements Client {
 			return false;
 		}
 		return true;
+	}
+
+	public boolean connect (String url, String password) {
+		parseURL(url);
+		return connect(hostname, username, password);
 	}
 
 	/**

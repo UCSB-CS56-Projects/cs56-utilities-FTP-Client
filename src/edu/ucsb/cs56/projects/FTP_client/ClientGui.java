@@ -36,7 +36,10 @@ public class ClientGui {
 	private JLabel statusLabel;
 	private JPanel statusPanel;
 	private ImageIcon statusIcon;
-	
+	private JComboBox protocolList;
+	private JPasswordField pwField;
+
+
 	public ClientGui()	{
 		frame 			= new JFrame("FTP Client");
 		displayPanel	= new JPanel();
@@ -51,17 +54,28 @@ public class ClientGui {
 		statusLabel = new JLabel(""); // Label that indicates program/connection status
 		fileListLabel	= new JLabel("File List");
 		hostField 		= new JTextField(20);
-		String[] ss = {"a","b","c","d","e"};
+		pwField = new JPasswordField(12);
+
+		String[] protocols = {"SFTP://", "FTP://"};
+		protocolList = new JComboBox(protocols);
 		fileList		= new JList();
 		scroller		= new JScrollPane(fileList);
 		selectedFile	= null;
 		lists			= new Vector<String>();
 		statusIcon = new ImageIcon("./assets/dialog-error.png");
-		newClient 		= new FtpClient();
-		
 	}
 	
 	public void buildGui()	{
+		// Request Swing to use system UI style, so the UI isn't as hideous on most platforms
+		// Defaults to metal if system style cannot be determined
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+		}
+		catch (Exception ex) {
+			System.out.println("Error: Could not set system look and feel");
+		}
+
 
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -80,7 +94,9 @@ public class ClientGui {
 
 		frame.getContentPane().add(BorderLayout.SOUTH, statusPanel);
 		loginPanel.add(hostLabel);
+		loginPanel.add(protocolList);
 		loginPanel.add(hostField);
+		loginPanel.add(pwField);
 		loginPanel.add(connectButton);
 		statusPanel.add(statusLabel);
 
@@ -89,7 +105,7 @@ public class ClientGui {
 		displayPanel.add(Box.createVerticalGlue());
 		displayPanel.add(loginPanel);
 		frame.getContentPane().add(BorderLayout.CENTER, displayPanel);
-		frame. setSize(500,400);
+		frame. setSize(600,400);
 		frame.setVisible(true);
 		
 		connectButton.addActionListener(new loginListener());
@@ -100,11 +116,26 @@ public class ClientGui {
 	}
 	
 	class loginListener implements ActionListener {
-		public void actionPerformed(ActionEvent e) {		
-			String hostname = hostField.getText();
-			
-			if(newClient.connect(hostname, "anonymous", "anonymous"))	{
-			
+		public void actionPerformed(ActionEvent e) {
+			String url = hostField.getText();
+			String hostname = "localhost";
+			String username = "anonymous";
+			String password;
+			int port;
+
+			// Decide which protocol to use based on protocolList combobox selection
+			if(protocolList.getSelectedIndex() == 0) {
+				newClient = new SftpClient();
+			}
+			else if (protocolList.getSelectedIndex() == 1) {
+				newClient = new FtpClient();
+			}
+
+			// Get password as char[] from pwField, convert to string
+			password = new String(pwField.getPassword());
+
+			if(newClient.connect(url, password))	{
+
 				loginPanel.setVisible(false);
 				String[] file = newClient.listFile();
 				lists.clear();
@@ -115,7 +146,7 @@ public class ClientGui {
 				downloadPanel.setVisible(true);
 				statusLabel.setText("Connected to " + hostname);
 				statusLabel.setIcon(null);
-			
+
 			}
 			else {
 				// Update statusLabel with an error message and error icon on connection failure
@@ -161,6 +192,13 @@ public class ClientGui {
 			loginPanel.setVisible(true);
 			statusLabel.setText("");
 			statusLabel.setIcon(null);
+		}
+	}
+
+	class protocolListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			JComboBox comboBox = (JComboBox)e.getSource();
+			String protocolType = (String)comboBox.getSelectedItem();
 		}
 	}
 	
