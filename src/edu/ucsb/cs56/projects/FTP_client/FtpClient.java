@@ -2,14 +2,8 @@
 
 package edu.ucsb.cs56.projects.FTP_client;
 
+import java.io.*;
 import java.util.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import org.apache.commons.net.ftp.FTP;
@@ -37,6 +31,7 @@ public class FtpClient extends Client {
 		stringFileList = null;
 		username = "anonymous";
 		password = "anonymous";
+		port = 23; // Default FTP port
 	}
 
 	/**
@@ -122,7 +117,7 @@ public class FtpClient extends Client {
 	public boolean connect (String hostname, String username, String password)	{
 
 		try {
-			client.connect(hostname);
+			client.connect(hostname, port);
 			System.out.println("Connected to " + hostname + ".");
 			System.out.println(client.getReplyString());
 			client.login("anonymous", "anonymous");
@@ -164,10 +159,14 @@ public class FtpClient extends Client {
 		System.out.println("Client start!");
 		Client newClient = new FtpClient();
 
-		System.out.println("input host name:");
+		System.out.println("Enter URL ( [user@]host[:port] ) :");
 		Scanner sc = new Scanner (System.in);
-		String host = sc.nextLine();
-		newClient.connect(host, "anonymous", "anonymous");
+		String url = sc.nextLine();
+		// Ask for password without echoing input to the console
+		Console c = System.console();
+		char[] password = c.readPassword("Input your password (press Enter for none): ");
+
+		newClient.connect(url, new String(password));
 		String[] f = newClient.listFile();
 		System.out.println("input file to download:");
 		sc = new Scanner (System.in);

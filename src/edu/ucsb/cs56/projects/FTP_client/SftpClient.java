@@ -58,7 +58,6 @@ public class SftpClient extends Client {
 	 */
 	public boolean connect (String host, String username, String password) {
 		try {
-			int port = 22;
 			Session session = client.getSession(username, host, port);
 			session.setPassword(password);
 
@@ -154,18 +153,15 @@ public class SftpClient extends Client {
 
 		System.out.println("Client start!");
 		Client newClient = new SftpClient();
-		System.out.println("input host name:");
+		System.out.println("Enter URL ( user@host[:port] ) :");
 		Scanner sc = new Scanner (System.in);
-		String host = sc.nextLine();
-
-		System.out.println("Input username: ");
-		String username = sc.nextLine();
+		String url = sc.nextLine();
 
 		// Ask for password without echoing input to the console
 		Console c = System.console();
 		char[] password = c.readPassword("Input your password: ");
 
-		newClient.connect(host, username, new String(password));
+		newClient.connect(url, new String(password));
 
 		String[] f = newClient.listFile();
 		System.out.println("input file to download:");
