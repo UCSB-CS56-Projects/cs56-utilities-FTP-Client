@@ -8,7 +8,8 @@ import java.util.Scanner;
 import java.util.Vector;
 
 /**
- * Created by David Coffill on 2/20/14.
+ * A class to support the SFTP protocol
+ * @author David Coffill
  */
 public class SftpClient implements Client {
 	private JSch client;
@@ -22,6 +23,10 @@ public class SftpClient implements Client {
 		stringFileList = null;
 	}
 
+	/**
+	 * List all files in current directory, including attributes, to both stdout and stringFileList
+	 * @return String array of file names
+	 */
 	public String[] listFile() {
 		System.out.println("*************File List************");
 		fileList=null;
@@ -43,6 +48,13 @@ public class SftpClient implements Client {
 		return stringFileList;
 	}
 
+	/**
+	 * Establish connection to remote host via SFTP protocol
+	 * @param host hostname of remote host (such as csil.cs.ucsb.edu)
+	 * @param username username to authenticate with
+	 * @param password password to authenticate with
+	 * @return true if the connection was successful, false if unsuccessful
+	 */
 	public boolean connect (String host, String username, String password) {
 		try {
 			int port = 22;
@@ -68,6 +80,10 @@ public class SftpClient implements Client {
 		return true;
 	}
 
+	/**
+	 * Change directory on the remote host
+	 * @param dir directory to change into on remote host
+	 */
 	public void ChangeDirectory(String dir) {
 		try {
 			cSftp.cd(dir);
@@ -77,8 +93,12 @@ public class SftpClient implements Client {
 		}
 	}
 
+	/**
+	 * Check if the specified filename is actually a file (as opposed to a directory, etc.)
+	 * @param filename filename to check
+	 * @return true if filename is a file, false otherwise
+	 */
 	public boolean isFile(String filename) {
-		// Check filename against each entry in the directory.  If filename isn't a directory, return true
 		for(ChannelSftp.LsEntry entry : fileList) {
 			if (filename.equals(entry.getFilename()) && !(entry.getAttrs().isDir()) ) {
 				return true;
@@ -88,6 +108,10 @@ public class SftpClient implements Client {
 		return false;
 	}
 
+	/**
+	 * Download a file from the remote host to the current directory on the local machine
+	 * @param input file name to retrieve from the remote host
+	 */
 	public void download(String input){
 		if (isFile(input)) {
 			try {
@@ -105,9 +129,15 @@ public class SftpClient implements Client {
 				ex.printStackTrace();
 			}
 		}
+		else {
+			System.out.println(input + " is not a file");
+		}
 	}
 
 
+	/**
+	 * Explicitly close the connection the remote host
+	 */
 	public void logout() {
 		cSftp.disconnect();
 	}

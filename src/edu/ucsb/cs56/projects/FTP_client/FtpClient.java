@@ -20,8 +20,9 @@ import org.apache.commons.net.ftp.FTPConnectionClosedException;
 
 /**
  * An FTP client support anonymous login and download files on current directory.
- * @version CS56, S13
- * @author Wenjie Huang  
+ * @version CS56, W14
+ * @author Wenjie Huang
+ * @author David Coffill
  */
 
 public class FtpClient implements Client {

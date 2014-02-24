@@ -9,6 +9,13 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import java.io.IOException;
 
+/**
+ * A basic FTP and SFTP client
+ * @version CS56, W14
+ * @author Wenjie Huang
+ * @author David Coffill
+ */
+
 public class ClientGui {
 	
 	private JFrame frame;

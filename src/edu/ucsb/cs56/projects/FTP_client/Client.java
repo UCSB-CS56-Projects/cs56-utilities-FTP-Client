@@ -19,43 +19,53 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPConnectionClosedException;
 
 /**
- * An FTP client support anonymous login and download files on current directory.
- * @version CS56, S13
- * @author Wenjie Huang  
+ * An interface that different transfer protocols can implement
+ * @version CS56, W14
+ * @author David Coffill
  */
 
 
 public interface Client {
-	/** Constructor
-	*/
 
 	/**
 	*	Change directory
 	* 	@param target directory
 	*/
-	
 	public void ChangeDirectory(String dir);
 
 
-	/** 
-	*	Show file list on current directory
-	*/
-	
-	//public FTPFile[] listFile();
+	/**
+	 * List all files in current directory
+	 * @return String array of file names
+	 */
 	public String[] listFile();
+
 
 	/** 
 	*	Determine if the file is a regular file
 	*/
-	
 	public boolean isFile(String filename);
-	
+
+
 	/** 
 	*	Download file user input on current directory.
 	* 	@param file name to download
 	*/
 	public void download(String input);
-	
+
+
+	/**
+	 * Establish connection to remote host
+	 * @param host hostname of remote host (such as csil.cs.ucsb.edu)
+	 * @param username username to authenticate with
+	 * @param password password to authenticate with
+	 * @return true if the connection was successful, false if unsuccessful
+	 */
 	public boolean connect (String host, String username, String password);
+
+
+	/**
+	 * Explicitly close the connection the remote host
+	 */
 	public void logout();
 }
