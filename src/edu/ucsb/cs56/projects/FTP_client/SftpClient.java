@@ -3,8 +3,7 @@ package edu.ucsb.cs56.projects.FTP_client;
 import com.jcraft.jsch.*;
 import org.apache.commons.net.ftp.FTPFile;
 
-import java.io.Console;
-import java.io.IOException;
+import java.io.*;
 import java.util.Scanner;
 import java.util.Vector;
 
@@ -14,7 +13,7 @@ import java.util.Vector;
 public class SftpClient implements Client {
 	private JSch client;
 	ChannelSftp cSftp;
-	private ChannelSftp.LsEntry fileList;
+	private Vector<ChannelSftp.LsEntry> fileList;
 	private String[] stringFileList;
 
 	public SftpClient() {
@@ -28,7 +27,7 @@ public class SftpClient implements Client {
 		fileList=null;
 		stringFileList=null;
 		try {
-			Vector<ChannelSftp.LsEntry> fileList = cSftp.ls(".");
+			fileList = cSftp.ls(".");
 
 			int size = fileList.size();
 			stringFileList = new String[size];
@@ -70,16 +69,42 @@ public class SftpClient implements Client {
 	}
 
 	public void ChangeDirectory(String dir) {
-		//@@@ FIXME stub
+		try {
+			cSftp.cd(dir);
+		}
+		catch (SftpException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public boolean isFile(String filename) {
-		// @@@FIXME stub;
+		// Check filename against each entry in the directory.  If filename isn't a directory, return true
+		for(ChannelSftp.LsEntry entry : fileList) {
+			if (filename.equals(entry.getFilename()) && !(entry.getAttrs().isDir()) ) {
+				return true;
+			}
+		}
+
 		return false;
 	}
 
 	public void download(String input){
-		// @@@ FIXME stub;
+		if (isFile(input)) {
+			try {
+				File file = new File(input);
+				OutputStream outputStream = new FileOutputStream(file);
+				if (!file.exists()) {
+					file.createNewFile();
+				}
+				cSftp.get(input, outputStream);
+			}
+			catch (SftpException ex) {
+				ex.printStackTrace();
+			}
+			catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
 	}
 
 
@@ -105,6 +130,9 @@ public class SftpClient implements Client {
 		newClient.connect(host, username, new String(password));
 
 		String[] f = newClient.listFile();
+		System.out.println("input file to download:");
+		String input = sc.nextLine();
+		newClient.download(input);
 	}
 
 }
