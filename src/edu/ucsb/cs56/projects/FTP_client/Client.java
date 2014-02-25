@@ -46,9 +46,11 @@ public abstract class Client {
 	public abstract String[] listFile();
 
 
-	/** 
-	*	Determine if the file is a regular file
-	*/
+	/**
+	 * Determine if the file is a regular file
+	 * @param filename file's name
+	 * @return true if filename is a file, false if it's a directory
+	 */
 	public abstract boolean isFile(String filename);
 
 

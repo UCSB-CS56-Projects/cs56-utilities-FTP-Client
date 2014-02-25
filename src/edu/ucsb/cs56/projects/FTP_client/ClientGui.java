@@ -26,6 +26,7 @@ public class ClientGui {
 	private JButton downloadButton;
 	private JButton logoutButton;
 	private JLabel	hostLabel;
+	private JLabel pwLabel;
 	private JLabel	fileListLabel;
 	private JTextField hostField;
 	private JScrollPane scroller;
@@ -53,6 +54,7 @@ public class ClientGui {
 		hostLabel		= new JLabel("Host: ");
 		statusLabel = new JLabel(""); // Label that indicates program/connection status
 		fileListLabel	= new JLabel("File List");
+		pwLabel = new JLabel("Password: ");
 		hostField 		= new JTextField(20);
 		pwField = new JPasswordField(12);
 
@@ -66,8 +68,8 @@ public class ClientGui {
 	}
 	
 	public void buildGui()	{
-		// Request Swing to use system UI style, so the UI isn't as hideous on most platforms
-		// Defaults to metal if system style cannot be determined
+		// Request Swing to use system UI style, so the UI isn't as hideous
+		// looking on most platforms
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
@@ -96,6 +98,7 @@ public class ClientGui {
 		loginPanel.add(hostLabel);
 		loginPanel.add(protocolList);
 		loginPanel.add(hostField);
+		loginPanel.add(pwLabel);
 		loginPanel.add(pwField);
 		loginPanel.add(connectButton);
 		statusPanel.add(statusLabel);
@@ -105,7 +108,7 @@ public class ClientGui {
 		displayPanel.add(Box.createVerticalGlue());
 		displayPanel.add(loginPanel);
 		frame.getContentPane().add(BorderLayout.CENTER, displayPanel);
-		frame. setSize(600,400);
+		frame. setSize(700,400);
 		frame.setVisible(true);
 		
 		connectButton.addActionListener(new loginListener());
@@ -116,12 +119,11 @@ public class ClientGui {
 	}
 	
 	class loginListener implements ActionListener {
+
 		public void actionPerformed(ActionEvent e) {
+
 			String url = hostField.getText();
-			String hostname = "localhost";
-			String username = "anonymous";
 			String password;
-			int port;
 
 			// Decide which protocol to use based on protocolList combobox selection
 			if(protocolList.getSelectedIndex() == 0) {
@@ -144,13 +146,13 @@ public class ClientGui {
 
 				fileList.setListData(lists);
 				downloadPanel.setVisible(true);
-				statusLabel.setText("Connected to " + hostname);
+				statusLabel.setText("Connected to " + url);
 				statusLabel.setIcon(null);
 
 			}
 			else {
 				// Update statusLabel with an error message and error icon on connection failure
-				statusLabel.setText("Error connecting to " + hostname + ", ensure the address is correct");
+				statusLabel.setText("Error connecting to " + url + ", ensure the address is correct");
 				statusLabel.setIcon(statusIcon);
 			}
 		}
@@ -180,8 +182,15 @@ public class ClientGui {
 	
 	class downloadListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			if(selectedFile!=null)	
-				newClient.download(selectedFile);
+			if(selectedFile!=null)	{
+				// Print out message to GUI bar if selection isn't a file
+				if ( !(newClient.isFile(selectedFile)) ) {
+					statusLabel.setText(selectedFile + " is not a file");
+				} else {
+					newClient.download(selectedFile);
+					statusLabel.setText("Downloading " + selectedFile);
+				}
+			}
 		}
 	}
 	
