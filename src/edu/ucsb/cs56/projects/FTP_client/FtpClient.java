@@ -31,7 +31,7 @@ public class FtpClient extends Client {
 		stringFileList = null;
 		username = "anonymous";
 		password = "anonymous";
-		port = 23; // Default FTP port
+		port = 21; // Default FTP port
 	}
 
 	/**
