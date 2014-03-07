@@ -7,9 +7,6 @@ An FTP client that supports FTP and SFTP (file transfer over SSH) protocols.  Th
 
 This client currently does not support switching directories (though the code is in place to do so with minor modification).
 
-
-
-
 GUI Usage
 ---------
 
@@ -27,7 +24,14 @@ Run the SFTP command line interface with `ant runSecure`
 As with the GUI, enter the hostname and password (if applicable), and then type the file to download.
 
 
-![](http://i.imgur.com/uUj9DH2.jpg)
+Screenshots
+-----------
+![](https://www.cs.ucsb.edu/~dcoffill/cs56/W14/project/cs56_utilities_FTP_Client/login-screenshot.png)
+Logging on to a server
+
+
+![](https://www.cs.ucsb.edu/~dcoffill/cs56/W14/project/cs56_utilities_FTP_Client/connected-screenshot.png)
+Connected to a server, ready to download files
 
 
 Building
