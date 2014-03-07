@@ -26,11 +26,11 @@ As with the GUI, enter the hostname and password (if applicable), and then type 
 
 Screenshots
 -----------
-![](https://www.cs.ucsb.edu/~dcoffill/cs56/W14/project/cs56_utilities_FTP_Client/login-screenshot.png)
+![](http://cs.ucsb.edu/~dcoffill/cs56/W14/project/cs56_utilities_FTP_Client/login-screenshot.png)
 Logging on to a server
 
 
-![](https://www.cs.ucsb.edu/~dcoffill/cs56/W14/project/cs56_utilities_FTP_Client/connected-screenshot.png)
+![](http://cs.ucsb.edu/~dcoffill/cs56/W14/project/cs56_utilities_FTP_Client/connected-screenshot.png)
 Connected to a server, ready to download files
 
 
