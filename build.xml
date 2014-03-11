@@ -1,21 +1,23 @@
 <project default="compile">
 
 	<!-- build.xml W13, CS56
-       	 name: Wenjie Huang -->
+       	 name: Wenjie Huang
+       	 name: David Coffill-->
 
 	<property environment="env" />
 	<property name="pkgDir" value="edu/ucsb/cs56/projects/FTP_client" />
 	<property name="fullDir" value="edu.ucsb.cs56.projects.FTP_client" />
 	<property name="mainClassGui" value="edu.ucsb.cs56.projects.FTP_client.ClientGui" />
-	<property name="mainClass" value="edu.ucsb.cs56.projects.FTP_client.Client" />
-	<property name="webRoot" value="${env.HOME}/public_html/cs56/S13/ProtossJane" />
-	<property name="webBaseURL" value="http://www.cs.ucsb.edu/~${env.USER}/cs56/S13/ProtossJane" />
-	<property name="projectName" value="cs56_math_conversion_quiz" />
+	<property name="mainClass" value="edu.ucsb.cs56.projects.FTP_client.FtpClient" />
+    <property name="mainClassSecure" value="edu.ucsb.cs56.projects.FTP_client.SftpClient" />
+    <property name="webRoot" value="${env.HOME}/public_html/cs56/W14/project" />
+	<property name="webBaseURL" value="http://www.cs.ucsb.edu/~${env.USER}/cs56/W14/project" />
+	<property name="projectName" value="cs56_utilities_FTP_Client" />
 	<property name="javadocDest" value="${webRoot}/${projectName}" />
 	<property name="javadocURL" value="${webBaseURL}/${projectName}" />
 	<property name="libPath1" value="lib/junit-4.8.2.jar" />
 	<property name="libPath2" value="lib/commons-net-3.2.jar" />
-	 <path id="classpath">
+	<path id="classpath">
         <fileset dir="lib" includes="*.jar"/>
     </path>
 
@@ -35,15 +37,25 @@
 				</classpath >
 				</java>
 	</target>
-	
-	
-	<target name="runGui" depends="compile" description="Run the Client GUI">
+
+    <target name="runSecure" depends="compile" description="run the client command line interface for SFTP">
+        <java classname="${mainClassSecure}" >
+            <classpath>
+                <path refid = "classpath"/>
+                <pathelement location="build" />
+            </classpath >
+        </java>
+    </target>
+
+
+
+    <target name="runGui" depends="compile" description="Run the Client GUI">
 		<java classname="${mainClassGui}" fork="true">
 		<classpath>
 			<path refid = "classpath"/>
 			<pathelement location="build" />
 		</classpath>
-		
+
 		 </java>
 	</target>
 
@@ -81,7 +93,7 @@
 		<echo>Javadoc deployed to ${javadocURL}</echo>
 	</target>
 
-	
+
 	<target name="jar" depends="compile" description="Bundle jarfiles">
 		<mkdir dir="dist" />
 		<jar destfile="dist/${projectName}.jar" basedir="build">
@@ -92,21 +104,21 @@
 	</target>
 
 
-	
 
 
 
 
-	
+
+
 	<target name="linenumbers" description="Creates a file containing all source files with line numbers">
 		<exec executable="bash">
 			<arg value="-c" />
-			<arg value='tree -ifQ src | grep \.java\"$ | xargs pr -n > numberedsource.txt' />                              
-	   </exec>                                                                                                         
+			<arg value='tree -ifQ src | grep \.java\"$ | xargs pr -n > numberedsource.txt' />
+	   </exec>
 	</target>
-	
-	
-	
-  
+
+
+
+
 
 </project>
