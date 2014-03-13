@@ -36,9 +36,9 @@ Connected to a server, ready to download files
 Developer notes
 ---------------
 
-This project is organized in a very straightforward manner.  Client is an abstract class meant to abstract the workings of a given protocol from the rest of the program logic, such as the user interface.
+This project is organized in a very straightforward manner.  Client is an abstract class meant to abstract the workings of a given protocol from the rest of the program logic, such as the user interface.  It provides a consistent way to interact with various transfer protocols, regardless of their inner workings.  There is only one method implemented in Client, which parseURL().  This method parses a URL for possible username/host/port information and provides reasonable defaults for the fields not found.
 
-FtpClient and SftpClient are implementations that extend Client, implementing FTP and SFTP protocols respectively.  Because all of their public methods behave identically, they are completely interchangeable in UI code.
+FtpClient and SftpClient are protocol-specific implementations that extend Client, implementing FTP and SFTP protocols respectively.  Because all of their public methods behave identically, they are completely interchangeable in UI code.
 
 FtpClient leverages Apache's [FTPClient](https://commons.apache.org/proper/commons-net/apidocs/org/apache/commons/net/ftp/FTPClient.html) for the actual FTP protocol implementations, while SftpClient leverages [JSch](http://epaul.github.io/jsch-documentation/javadoc/) for its implementation of SSH/SFTP.
 
@@ -46,7 +46,7 @@ New protocols can be easily implemented by extending and implementing each of Cl
 
 All GUI code is located in ClientGui, while FtpClient and SftpClient each contain their own CLI main methods (that could probably be consolidated in to one CLI class in the future).
 
-Note that this program currently does not support switching directories (though the code is in place to do so with minor modification).
+Note that this program currently does not support switching directories (though the code should be in place to do so with minor modification).
 
 Building
 --------

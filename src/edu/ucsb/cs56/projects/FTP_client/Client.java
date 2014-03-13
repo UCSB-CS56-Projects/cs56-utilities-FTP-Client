@@ -54,7 +54,7 @@ public abstract class Client {
 	public abstract boolean isFile(String filename);
 
 
-	/** 
+	/**
 	*	Download file user input on current directory.
 	* 	@param file name to download
 	*/
@@ -88,7 +88,7 @@ public abstract class Client {
 
 	/**
 	 * Takes a valid RFC 1738 or RFC 3986 URL/URI in the form of
-	 * user:password@host:port/path and parses it for connection information
+	 * user@host:port and parses it for connection information
 	 * @param url Any valid RFC 1738/3986 URL/URI
 	 */
 	public void parseURL(String url) {
