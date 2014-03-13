@@ -54,7 +54,7 @@ public abstract class Client {
 	public abstract boolean isFile(String filename);
 
 
-	/** 
+	/**
 	*	Download file user input on current directory.
 	* 	@param file name to download
 	*/
