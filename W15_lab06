@@ -1,2 +1,13 @@
+Capabilities
+* Connects to a server by ftp or sftp
+* Can run through command line or GUI interface
+* Lists all files and directories in root directory of address
+
+Issues to Fix
+* GUI file list columns are inconsistent
+* Cannot change directories
+
+Other Issues
 * Prints "Connection failure" when initiating connection through command line
 * No JUnit tests!
+

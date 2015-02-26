@@ -31,6 +31,7 @@ public class ClientGui {
 	private JTextField hostField;
 	private JScrollPane scroller;
 	private JList fileList;
+    private JTable fileTable;
 	private String selectedFile;
 	private Vector<String> lists;
 	private Client newClient;
@@ -44,27 +45,28 @@ public class ClientGui {
 	public ClientGui()	{
 		frame 			= new JFrame("FTP Client");
 		displayPanel	= new JPanel();
-		loginPanel 	= new JPanel();
+		loginPanel 	    = new JPanel();
 		downloadPanel 	= new JPanel();
-		statusPanel = new JPanel();
+		statusPanel     = new JPanel();
 		connectButton	= new JButton("Connect");
 		downloadButton	= new JButton("Download");
 		logoutButton	= new JButton("Logout");
 
 		hostLabel		= new JLabel("Host: ");
-		statusLabel = new JLabel(""); // Label that indicates program/connection status
+		statusLabel     = new JLabel(""); // Label that indicates program/connection status
 		fileListLabel	= new JLabel("File List");
-		pwLabel = new JLabel("Password: ");
+		pwLabel         = new JLabel("Password: ");
 		hostField 		= new JTextField(20);
-		pwField = new JPasswordField(12);
+		pwField         = new JPasswordField(12);
 
 		String[] protocols = {"SFTP://", "FTP://"};
-		protocolList = new JComboBox(protocols);
+		protocolList    = new JComboBox(protocols);
 		fileList		= new JList();
+        fileTable       = new JTable();
 		scroller		= new JScrollPane(fileList);
 		selectedFile	= null;
 		lists			= new Vector<String>();
-		statusIcon = new ImageIcon("./assets/dialog-error.png");
+		statusIcon      = new ImageIcon("./assets/dialog-error.png");
 	}
 	
 	public void buildGui()	{
@@ -88,8 +90,12 @@ public class ClientGui {
 		scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		downloadPanel.add(fileListLabel);
 		downloadPanel.add(scroller);
-		fileList.setVisibleRowCount(3);
-		fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);		
+		//fileList.setVisibleRowCount(3);
+		//fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        // Create JTable to list files
+        
+
 		downloadPanel.add(downloadButton);
 		downloadPanel.add(Box.createVerticalStrut(5));
 		downloadPanel.add(logoutButton);
@@ -112,32 +118,28 @@ public class ClientGui {
 		frame.setVisible(true);
 		
 		connectButton.addActionListener(new loginListener());
-		fileList.addMouseListener(new selectListener());
+		//fileList.addMouseListener(new selectListener());
 		downloadButton.addActionListener(new downloadListener());
 		logoutButton.addActionListener(new logoutListener());
 		
 	}
 	
 	class loginListener implements ActionListener {
-
 		public void actionPerformed(ActionEvent e) {
-
 			String url = hostField.getText();
 			String password;
 
 			// Decide which protocol to use based on protocolList combobox selection
-			if(protocolList.getSelectedIndex() == 0) {
+			if(protocolList.getSelectedIndex() == 0)
 				newClient = new SftpClient();
-			}
-			else if (protocolList.getSelectedIndex() == 1) {
+			else if (protocolList.getSelectedIndex() == 1)
 				newClient = new FtpClient();
-			}
 
 			// Get password as char[] from pwField, convert to string
 			password = new String(pwField.getPassword());
 
 			if(newClient.connect(url, password))	{
-
+                // Draw file interface
 				loginPanel.setVisible(false);
 				String[] file = newClient.listFile();
 				lists.clear();

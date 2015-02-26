@@ -22,7 +22,8 @@ import org.apache.commons.net.ftp.FTPConnectionClosedException;
 public class FtpClient extends Client {
 	private FTPClient client;
 	private FTPFile[] fileList;
-	private String[] stringFileList;
+	private String[][] stringFileList;
+    private String delimiters;
 	/** Constructor
 	 */
 	public FtpClient()	{
@@ -54,14 +55,14 @@ public class FtpClient extends Client {
 		System.out.println("*************File List************");
 		fileList=null;
 		stringFileList=null;
+        delimiters = "[ ]+";
 		try {
 			FTPFile[] fileList = client.listFiles();
-			stringFileList = new String[fileList.length];
-			//fileList = client.listFiles();
+            // Initialize string array of files
+			//stringFileList = new String[fileList.length];
 			for (int i = 0; i < fileList.length; ++i) {
-				stringFileList[i] = fileList[i].toString();
-				System.out.println(stringFileList[i]);
-
+				stringFileList[i][] = fileList[i].toString().split(delimiters);
+				//System.out.println(stringFileList[i][]);
 			}
 		}
 		catch (IOException e)	{}
