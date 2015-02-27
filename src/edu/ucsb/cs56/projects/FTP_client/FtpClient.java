@@ -51,7 +51,7 @@ public class FtpClient extends Client {
 	 *	Show file list on current directory
 	 */
 
-	public String[] listFile()	{
+	public String[][] listFile()	{
 		System.out.println("*************File List************");
 		fileList=null;
 		stringFileList=null;
@@ -61,7 +61,7 @@ public class FtpClient extends Client {
             // Initialize string array of files
 			//stringFileList = new String[fileList.length];
 			for (int i = 0; i < fileList.length; ++i) {
-				stringFileList[i][] = fileList[i].toString().split(delimiters);
+				stringFileList[i] = fileList[i].toString().split(delimiters);
 				//System.out.println(stringFileList[i][]);
 			}
 		}
@@ -168,7 +168,7 @@ public class FtpClient extends Client {
 		char[] password = c.readPassword("Input your password (press Enter for none): ");
 
 		newClient.connect(url, new String(password));
-		String[] f = newClient.listFile();
+		String[][] f = newClient.listFile();
 		System.out.println("input file to download:");
 		sc = new Scanner (System.in);
 		String input = sc.nextLine();

@@ -15,7 +15,9 @@ public class SftpClient extends Client {
 	private JSch client;
 	ChannelSftp cSftp;
 	private Vector<ChannelSftp.LsEntry> fileList;
-	private String[] stringFileList;
+	private String[][] stringFileList;
+    private String delimiters;
+    private String[] temp;
 
 	public SftpClient() {
 		client = new JSch();
@@ -28,19 +30,24 @@ public class SftpClient extends Client {
 	 * List all files in current directory, including attributes, to both stdout and stringFileList
 	 * @return String array of file names
 	 */
-	public String[] listFile() {
-		System.out.println("*************File List************");
-		fileList=null;
-		stringFileList=null;
+	public String[][] listFile() {
+        System.out.println("*************File List************");
+        fileList=null;
+        stringFileList=null;
+        delimiters = "[ ]+";
 		try {
+            System.out.println("Try...");
 			fileList = cSftp.ls(".");
-
+            System.out.println("fileList parsed!");
 			int size = fileList.size();
-			stringFileList = new String[size];
+            temp = new String[size];
+            System.out.println("Try to copy vector into temp");
+			stringFileList = new String[size][9];
 			for (int i = 0; i < size; ++i) {
-				stringFileList[i] = fileList.get(i).toString();
-				System.out.println(stringFileList[i]);
-
+                temp[i] = fileList.get(i).toString();
+                //System.out.println(temp[i]);
+				stringFileList[i] = temp[i].split(delimiters);
+                //System.out.println(stringFileList[i][0]);
 			}
 		}
 		catch (SftpException ex) {
@@ -163,7 +170,7 @@ public class SftpClient extends Client {
 
 		newClient.connect(url, new String(password));
 
-		String[] f = newClient.listFile();
+		String[][] f = newClient.listFile();
 		System.out.println("input file to download:");
 		String input = sc.nextLine();
 		newClient.download(input);

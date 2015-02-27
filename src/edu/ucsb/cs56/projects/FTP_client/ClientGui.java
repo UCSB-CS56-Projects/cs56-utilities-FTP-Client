@@ -2,6 +2,7 @@
 package edu.ucsb.cs56.projects.FTP_client;
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.util.*;
 import java.awt.event.*;
 import org.apache.commons.net.ftp.FTP;
@@ -31,6 +32,7 @@ public class ClientGui {
 	private JTextField hostField;
 	private JScrollPane scroller;
 	private JList fileList;
+    private DefaultTableModel fileModel;
     private JTable fileTable;
 	private String selectedFile;
 	private Vector<String> lists;
@@ -41,7 +43,13 @@ public class ClientGui {
 	private JComboBox protocolList;
 	private JPasswordField pwField;
 
+    public class MyTableModel extends DefaultTableModel {
 
+        public boolean isCellEditable(int row, int column){
+            return false;
+        }
+
+    }
 	public ClientGui()	{
 		frame 			= new JFrame("FTP Client");
 		displayPanel	= new JPanel();
@@ -61,9 +69,15 @@ public class ClientGui {
 
 		String[] protocols = {"SFTP://", "FTP://"};
 		protocolList    = new JComboBox(protocols);
-		fileList		= new JList();
-        fileTable       = new JTable();
-		scroller		= new JScrollPane(fileList);
+		//fileList		= new JList();
+        fileModel       = new MyTableModel();
+        fileModel.setColumnIdentifiers(new String[]
+                {"Permissions","Links","Owner","Group","Size",
+                        "Month","Date","Time","File Name"});
+        fileTable       = new JTable(fileModel);
+        fileTable.setRowSelectionAllowed(true);
+        fileTable.setColumnSelectionAllowed(false);
+		scroller		= new JScrollPane(fileTable);
 		selectedFile	= null;
 		lists			= new Vector<String>();
 		statusIcon      = new ImageIcon("./assets/dialog-error.png");
@@ -94,7 +108,6 @@ public class ClientGui {
 		//fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         // Create JTable to list files
-        
 
 		downloadPanel.add(downloadButton);
 		downloadPanel.add(Box.createVerticalStrut(5));
@@ -141,12 +154,19 @@ public class ClientGui {
 			if(newClient.connect(url, password))	{
                 // Draw file interface
 				loginPanel.setVisible(false);
-				String[] file = newClient.listFile();
+                System.out.println("listFile()");
+				String[][] files = newClient.listFile();
+                System.out.println(files[0][0]);
 				lists.clear();
-				for(String f : file)
-					lists.add(f);
+                System.out.println("Add to fileTable...");
+				for(int i=0; i<files.length; i++)
+					fileModel.addRow(files);
 
-				fileList.setListData(lists);
+				//fileList.setListData(lists);
+                fileTable       = new JTable(fileModel);
+                fileTable.setRowSelectionAllowed(true);
+                fileTable.setColumnSelectionAllowed(false);
+                scroller		= new JScrollPane(fileTable);
 				downloadPanel.setVisible(true);
 				statusLabel.setText("Connected to " + url);
 				statusLabel.setIcon(null);
