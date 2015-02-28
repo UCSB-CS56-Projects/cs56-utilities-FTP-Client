@@ -43,7 +43,7 @@ public abstract class Client {
 	 * List all files in current directory
 	 * @return String array of file names
 	 */
-	public abstract String[][] listFile();
+	public abstract Object[][] listFile();
 
 
 	/**

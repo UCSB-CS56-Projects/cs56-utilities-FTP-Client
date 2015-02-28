@@ -1,8 +1,9 @@
 
 package edu.ucsb.cs56.projects.FTP_client;
-import java.awt.*;
 import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
+import java.awt.BorderLayout;
 import java.util.*;
 import java.awt.event.*;
 import org.apache.commons.net.ftp.FTP;
@@ -32,8 +33,9 @@ public class ClientGui {
 	private JTextField hostField;
 	private JScrollPane scroller;
 	private JList fileList;
-    private DefaultTableModel fileModel;
+    private MyTableModel fileModel;
     private JTable fileTable;
+    private String[] columnNames;
 	private String selectedFile;
 	private Vector<String> lists;
 	private Client newClient;
@@ -42,14 +44,23 @@ public class ClientGui {
 	private ImageIcon statusIcon;
 	private JComboBox protocolList;
 	private JPasswordField pwField;
+    private Object[][] files;
 
     public class MyTableModel extends DefaultTableModel {
+        private boolean isEditable = true;
 
-        public boolean isCellEditable(int row, int column){
-            return false;
+        public MyTableModel(Object[][] files, String[] columnNames) {
+            super(files, columnNames);
         }
 
+        public boolean isCellEditable(int row, int column) {
+            return isEditable;
+        }
+        public void setEditable(boolean isEditable) {
+            this.isEditable = isEditable;
+        }
     }
+
 	public ClientGui()	{
 		frame 			= new JFrame("FTP Client");
 		displayPanel	= new JPanel();
@@ -59,25 +70,18 @@ public class ClientGui {
 		connectButton	= new JButton("Connect");
 		downloadButton	= new JButton("Download");
 		logoutButton	= new JButton("Logout");
-
+        scroller        = new JScrollPane();
 		hostLabel		= new JLabel("Host: ");
 		statusLabel     = new JLabel(""); // Label that indicates program/connection status
 		fileListLabel	= new JLabel("File List");
 		pwLabel         = new JLabel("Password: ");
 		hostField 		= new JTextField(20);
 		pwField         = new JPasswordField(12);
-
+        columnNames     = new String[] {"Permissions","Links","Owner","Group","Size",
+                        "Month","Date","Time","File Name"};
 		String[] protocols = {"SFTP://", "FTP://"};
 		protocolList    = new JComboBox(protocols);
 		//fileList		= new JList();
-        fileModel       = new MyTableModel();
-        fileModel.setColumnIdentifiers(new String[]
-                {"Permissions","Links","Owner","Group","Size",
-                        "Month","Date","Time","File Name"});
-        fileTable       = new JTable(fileModel);
-        fileTable.setRowSelectionAllowed(true);
-        fileTable.setColumnSelectionAllowed(false);
-		scroller		= new JScrollPane(fileTable);
 		selectedFile	= null;
 		lists			= new Vector<String>();
 		statusIcon      = new ImageIcon("./assets/dialog-error.png");
@@ -101,18 +105,13 @@ public class ClientGui {
 		downloadPanel.setLayout(new BoxLayout(downloadPanel, BoxLayout.Y_AXIS));
 		statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.Y_AXIS));
 
-		scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        loginListener login = new loginListener();
+
+        scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		downloadPanel.add(fileListLabel);
-		downloadPanel.add(scroller);
+
 		//fileList.setVisibleRowCount(3);
 		//fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-        // Create JTable to list files
-
-		downloadPanel.add(downloadButton);
-		downloadPanel.add(Box.createVerticalStrut(5));
-		downloadPanel.add(logoutButton);
-
 		frame.getContentPane().add(BorderLayout.SOUTH, statusPanel);
 		loginPanel.add(hostLabel);
 		loginPanel.add(protocolList);
@@ -127,11 +126,11 @@ public class ClientGui {
 		displayPanel.add(Box.createVerticalGlue());
 		displayPanel.add(loginPanel);
 		frame.getContentPane().add(BorderLayout.CENTER, displayPanel);
-		frame. setSize(700,400);
+		frame.setSize(700, 400);
 		frame.setVisible(true);
 		
-		connectButton.addActionListener(new loginListener());
-		//fileList.addMouseListener(new selectListener());
+		connectButton.addActionListener(login);
+		fileTable.addMouseListener(new selectListener());
 		downloadButton.addActionListener(new downloadListener());
 		logoutButton.addActionListener(new logoutListener());
 		
@@ -154,23 +153,28 @@ public class ClientGui {
 			if(newClient.connect(url, password))	{
                 // Draw file interface
 				loginPanel.setVisible(false);
-                System.out.println("listFile()");
-				String[][] files = newClient.listFile();
-                System.out.println(files[0][0]);
-				lists.clear();
-                System.out.println("Add to fileTable...");
-				for(int i=0; i<files.length; i++)
-					fileModel.addRow(files);
 
-				//fileList.setListData(lists);
-                fileTable       = new JTable(fileModel);
+                // Load files from directory
+				files = newClient.listFile();
+                System.out.println(files[0][0]);
+				//lists.clear();
+
+                fileModel = new MyTableModel(files,columnNames);
+                fileTable = new JTable(fileModel);
                 fileTable.setRowSelectionAllowed(true);
                 fileTable.setColumnSelectionAllowed(false);
-                scroller		= new JScrollPane(fileTable);
-				downloadPanel.setVisible(true);
+                fileModel.setEditable(false);
+                System.out.println(fileTable.getRowCount());
+                System.out.println(fileTable.getColumnCount());
+                scroller = new JScrollPane(fileTable);
+
+                downloadPanel.add(scroller);
+                downloadPanel.add(downloadButton);
+                downloadPanel.add(Box.createVerticalStrut(5));
+                downloadPanel.add(logoutButton);
+                downloadPanel.setVisible(true);
 				statusLabel.setText("Connected to " + url);
 				statusLabel.setIcon(null);
-
 			}
 			else {
 				// Update statusLabel with an error message and error icon on connection failure
@@ -183,11 +187,10 @@ public class ClientGui {
 	class selectListener implements MouseListener	{
 		
 		public void mouseClicked(MouseEvent e)	{
-			int index = fileList.locationToIndex(e.getPoint());
+			int index = fileTable.rowAtPoint(e.getPoint());
 			
-			if(index>=0)	{
-				String[] file = lists.get(index).split(" ");
-				selectedFile = file[file.length-1];
+			if(index>=0) {
+				selectedFile = (String)files[index][8];
 				System.out.println("select "+selectedFile);
 			}
 		}
