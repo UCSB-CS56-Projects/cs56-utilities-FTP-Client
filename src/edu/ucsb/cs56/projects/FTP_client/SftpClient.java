@@ -115,9 +115,17 @@ public class SftpClient extends Client {
 				return true;
 			}
 		}
-
 		return false;
 	}
+
+    public boolean isDir(String filename) {
+        for(ChannelSftp.LsEntry entry : fileList) {
+            if (filename.equals(entry.getFilename()) && (entry.getAttrs().isDir())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 	/**
 	 * Download a file from the remote host to the current directory on the local machine

@@ -3,15 +3,9 @@ package edu.ucsb.cs56.projects.FTP_client;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import java.awt.BorderLayout;
-import java.util.*;
 import java.awt.event.*;
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPFile;
-import java.io.IOException;
 
 /**
  * A basic FTP and SFTP client
@@ -28,6 +22,7 @@ public class ClientGui {
 	private JPanel loginPanel;
 	private JPanel downloadPanel;
 	private JButton connectButton;
+    private JButton cdButton;
 	private JButton downloadButton;
 	private JButton logoutButton;
 	private JLabel	hostLabel;
@@ -38,7 +33,7 @@ public class ClientGui {
     private MyTableModel fileModel;
     private JTable fileTable;
     private String[] columnNames;
-	private String selectedFile;
+	private String selectedItem;
 	private Client newClient;
 	private JLabel statusLabel;
 	private JPanel statusPanel;
@@ -69,6 +64,7 @@ public class ClientGui {
 		downloadPanel 	= new JPanel();
 		statusPanel     = new JPanel();
 		connectButton	= new JButton("Connect");
+        cdButton        = new JButton("Change Directory");
 		downloadButton	= new JButton("Download");
 		logoutButton	= new JButton("Logout");
         scroller        = new JScrollPane();
@@ -82,7 +78,7 @@ public class ClientGui {
                         "Month","Date","Time/Year","File Name"};
 		String[] protocols = {"SFTP://", "FTP://"};
 		protocolList    = new JComboBox(protocols);
-		selectedFile	= null;
+		selectedItem = null;
 		statusIcon      = new ImageIcon("./assets/dialog-error.png");
 	}
 	
@@ -165,6 +161,8 @@ public class ClientGui {
                 // Reset download panel and add components
                 downloadPanel.removeAll();
                 downloadPanel.add(scroller);
+                downloadPanel.add(cdButton);
+                downloadPanel.add(Box.createVerticalStrut(5));
                 downloadPanel.add(downloadButton);
                 downloadPanel.add(Box.createVerticalStrut(5));
                 downloadPanel.add(logoutButton);
@@ -188,7 +186,7 @@ public class ClientGui {
             if(!e.getValueIsAdjusting()) { // Prevents listener from invoking on unclick
                 if (lsm.isSelectionEmpty()) {
                     System.out.println("Nothing selected");
-                    selectedFile = null;
+                    selectedItem = null;
                 } else {
                     // Find out which files are selected
                     int minIndex = lsm.getMinSelectionIndex();
@@ -196,8 +194,8 @@ public class ClientGui {
                     //System.out.println("minIndex, maxIndex = "+minIndex+", "+maxIndex);
                     for (int i = minIndex; i <= maxIndex; i++) {
                         if (lsm.isSelectedIndex(i)) {
-                            selectedFile = (String) files[i][8];
-                            System.out.println("'" + selectedFile + "' selected");
+                            selectedItem = (String) files[i][8];
+                            System.out.println("'" + selectedItem + "' selected");
                         }
                     }
                 }
@@ -212,8 +210,8 @@ public class ClientGui {
 			int index = fileTable.rowAtPoint(e.getPoint());
 			
 			if(index>=0) {
-				selectedFile = (String)files[index][8];
-				System.out.println("select "+selectedFile);
+				selectedItem = (String)files[index][8];
+				System.out.println("select "+ selectedItem);
 			}
 		}
 		public void mouseEntered(MouseEvent e)	{	}
@@ -221,17 +219,22 @@ public class ClientGui {
 		public void mousePressed(MouseEvent e)	{	}
 		public void mouseReleased(MouseEvent e) {	}
 	}
+
+    class cdListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+        }
+    }
 	
 	class downloadListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
             //System.out.println("downloadListener invoked!");
-			if(selectedFile!=null)	{
+			if(selectedItem !=null)	{
 				// Print out message to GUI bar if selection isn't a file
-				if ( !(newClient.isFile(selectedFile)) ) {
-					statusLabel.setText(selectedFile + " is not a file");
+				if ( !(newClient.isFile(selectedItem)) ) {
+					statusLabel.setText(selectedItem + " is not a file");
 				} else {
-					newClient.download(selectedFile);
-					statusLabel.setText("Downloading " + selectedFile);
+					newClient.download(selectedItem);
+					statusLabel.setText("Downloading " + selectedItem);
 				}
 			}
 		}
