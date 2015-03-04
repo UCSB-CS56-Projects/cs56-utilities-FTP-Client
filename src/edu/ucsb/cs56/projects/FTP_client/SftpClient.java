@@ -36,7 +36,6 @@ public class SftpClient extends Client {
         stringFileList=null;
         delimiters = "[ ]+";
 		try {
-            System.out.println("Try...");
 			fileList = cSftp.ls(".");
 			int size = fileList.size();
             stringFileList = new String[size][9];
@@ -45,6 +44,7 @@ public class SftpClient extends Client {
             for (int i = 0; i < size; ++i) {
                 temp[i] = fileList.get(i).toString();
 				stringFileList[i] = temp[i].split(delimiters);
+                System.out.println(stringFileList[i][8]);
 			}
 		}
 		catch (SftpException ex) {

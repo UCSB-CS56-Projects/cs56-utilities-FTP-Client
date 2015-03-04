@@ -1,6 +1,8 @@
 
 package edu.ucsb.cs56.projects.FTP_client;
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import java.awt.BorderLayout;
@@ -32,12 +34,10 @@ public class ClientGui {
 	private JLabel	fileListLabel;
 	private JTextField hostField;
 	private JScrollPane scroller;
-	private JList fileList;
     private MyTableModel fileModel;
     private JTable fileTable;
     private String[] columnNames;
 	private String selectedFile;
-	private Vector<String> lists;
 	private Client newClient;
 	private JLabel statusLabel;
 	private JPanel statusPanel;
@@ -78,12 +78,10 @@ public class ClientGui {
 		hostField 		= new JTextField(20);
 		pwField         = new JPasswordField(12);
         columnNames     = new String[] {"Permissions","Links","Owner","Group","Size",
-                        "Month","Date","Time","File Name"};
+                        "Month","Date","Time/Year","File Name"};
 		String[] protocols = {"SFTP://", "FTP://"};
 		protocolList    = new JComboBox(protocols);
-		//fileList		= new JList();
 		selectedFile	= null;
-		lists			= new Vector<String>();
 		statusIcon      = new ImageIcon("./assets/dialog-error.png");
 	}
 	
@@ -98,9 +96,7 @@ public class ClientGui {
 			System.out.println("Error: Could not set system look and feel");
 		}
 
-
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
 		displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.Y_AXIS));
 		downloadPanel.setLayout(new BoxLayout(downloadPanel, BoxLayout.Y_AXIS));
 		statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.Y_AXIS));
@@ -110,8 +106,6 @@ public class ClientGui {
         scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		downloadPanel.add(fileListLabel);
 
-		//fileList.setVisibleRowCount(3);
-		//fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		frame.getContentPane().add(BorderLayout.SOUTH, statusPanel);
 		loginPanel.add(hostLabel);
 		loginPanel.add(protocolList);
@@ -121,7 +115,7 @@ public class ClientGui {
 		loginPanel.add(connectButton);
 		statusPanel.add(statusLabel);
 
-		displayPanel.add(downloadPanel);
+	    displayPanel.add(downloadPanel);
 		downloadPanel.setVisible(false);
 		displayPanel.add(Box.createVerticalGlue());
 		displayPanel.add(loginPanel);
@@ -130,7 +124,6 @@ public class ClientGui {
 		frame.setVisible(true);
 		
 		connectButton.addActionListener(login);
-		fileTable.addMouseListener(new selectListener());
 		downloadButton.addActionListener(new downloadListener());
 		logoutButton.addActionListener(new logoutListener());
 		
@@ -156,22 +149,25 @@ public class ClientGui {
 
                 // Load files from directory
 				files = newClient.listFile();
-                System.out.println(files[0][0]);
-				//lists.clear();
 
+                // Create fileModel and fileTable with attributes
                 fileModel = new MyTableModel(files,columnNames);
                 fileTable = new JTable(fileModel);
                 fileTable.setRowSelectionAllowed(true);
                 fileTable.setColumnSelectionAllowed(false);
+                fileTable.getSelectionModel().addListSelectionListener
+                        (new fileSelectionListener());
                 fileModel.setEditable(false);
-                System.out.println(fileTable.getRowCount());
-                System.out.println(fileTable.getColumnCount());
+                System.out.println("Number of files: " + fileTable.getRowCount());
                 scroller = new JScrollPane(fileTable);
 
+                // Reset download panel and add components
+                downloadPanel.removeAll();
                 downloadPanel.add(scroller);
                 downloadPanel.add(downloadButton);
                 downloadPanel.add(Box.createVerticalStrut(5));
                 downloadPanel.add(logoutButton);
+                downloadPanel.addMouseListener(new selectListener());
                 downloadPanel.setVisible(true);
 				statusLabel.setText("Connected to " + url);
 				statusLabel.setIcon(null);
@@ -183,10 +179,35 @@ public class ClientGui {
 			}
 		}
 	}
-	
+
+    class fileSelectionListener implements ListSelectionListener {
+        public void valueChanged(ListSelectionEvent e) {
+            //System.out.println("FileSelectionListener invoked!");
+            ListSelectionModel lsm = (ListSelectionModel) e.getSource();
+            if(!e.getValueIsAdjusting()) { // Prevents listener from invoking on unclick
+                if (lsm.isSelectionEmpty()) {
+                    System.out.println("Nothing selected");
+                    selectedFile = null;
+                } else {
+                    // Find out which files are selected
+                    int minIndex = lsm.getMinSelectionIndex();
+                    int maxIndex = lsm.getMaxSelectionIndex();
+                    //System.out.println("minIndex, maxIndex = "+minIndex+", "+maxIndex);
+                    for (int i = minIndex; i <= maxIndex; i++) {
+                        if (lsm.isSelectedIndex(i)) {
+                            selectedFile = (String) files[i][8];
+                            System.out.println("'" + selectedFile + "' selected");
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // selectListener not used for fileTable
 	class selectListener implements MouseListener	{
-		
 		public void mouseClicked(MouseEvent e)	{
+            //System.out.println("selectListener called!");
 			int index = fileTable.rowAtPoint(e.getPoint());
 			
 			if(index>=0) {
@@ -194,19 +215,15 @@ public class ClientGui {
 				System.out.println("select "+selectedFile);
 			}
 		}
-
-		
 		public void mouseEntered(MouseEvent e)	{	}
-		
-		public void mouseExited(MouseEvent e)	{	} 
-		
+		public void mouseExited(MouseEvent e)	{	}
 		public void mousePressed(MouseEvent e)	{	}
-		
 		public void mouseReleased(MouseEvent e) {	}
 	}
 	
 	class downloadListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
+            //System.out.println("downloadListener invoked!");
 			if(selectedFile!=null)	{
 				// Print out message to GUI bar if selection isn't a file
 				if ( !(newClient.isFile(selectedFile)) ) {
@@ -221,11 +238,14 @@ public class ClientGui {
 	
 	class logoutListener implements ActionListener	{
 		public void actionPerformed(ActionEvent e) {
+            //System.out.println("logoutListener invoked!");
 			newClient.logout();
 			downloadPanel.setVisible(false);
 			loginPanel.setVisible(true);
 			statusLabel.setText("");
 			statusLabel.setIcon(null);
+            fileTable = null;
+            fileModel = null;
 		}
 	}
 
