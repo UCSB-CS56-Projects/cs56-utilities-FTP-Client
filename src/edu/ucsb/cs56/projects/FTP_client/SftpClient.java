@@ -10,6 +10,7 @@ import java.util.Vector;
 /**
  * A class to support the SFTP protocol
  * @author David Coffill
+ * @author Jeffrey Chen
  */
 public class SftpClient extends Client {
 	private JSch client;

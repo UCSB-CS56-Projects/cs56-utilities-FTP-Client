@@ -17,6 +17,7 @@ import org.apache.commons.net.ftp.FTPConnectionClosedException;
  * @version CS56, W14
  * @author Wenjie Huang
  * @author David Coffill
+ * @author Jeffrey Chen
  */
 
 public class FtpClient extends Client {
@@ -62,6 +63,7 @@ public class FtpClient extends Client {
 
 			for (int i = 0; i < fileList.length; ++i) {
 				stringFileList[i] = fileList[i].toString().split(delimiters);
+                System.out.println(stringFileList[i][8]);
 			}
 		}
 		catch (IOException e)	{}

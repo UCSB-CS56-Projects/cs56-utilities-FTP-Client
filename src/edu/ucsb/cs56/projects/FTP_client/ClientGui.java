@@ -18,6 +18,7 @@ import java.io.IOException;
  * @version CS56, W14
  * @author Wenjie Huang
  * @author David Coffill
+ * @author Jeffrey Chen
  */
 
 public class ClientGui {
