@@ -78,7 +78,7 @@ public class ClientGui {
                         "Month","Date","Time/Year","File Name"};
 		String[] protocols = {"SFTP://", "FTP://"};
 		protocolList    = new JComboBox(protocols);
-		selectedItem = null;
+		selectedItem    = null;
 		statusIcon      = new ImageIcon("./assets/dialog-error.png");
 	}
 	
@@ -196,7 +196,7 @@ public class ClientGui {
                     for (int i = minIndex; i <= maxIndex; i++) {
                         if (lsm.isSelectedIndex(i)) {
                             selectedItem = (String) files[i][8];
-                            System.out.println("'" + selectedItem + "' selected");
+                            System.out.println("'"+selectedItem+"' selected");
                         }
                     }
                 }
@@ -224,6 +224,7 @@ public class ClientGui {
     class cdListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             System.out.println("cdListener invoked");
+            String url = hostField.getText();
             if(selectedItem !=null) {
                 if ( !(newClient.isDir(selectedItem)) ) {
                     statusLabel.setText(selectedItem+" is not a directory");
@@ -234,6 +235,31 @@ public class ClientGui {
                             ("Changing to '"+selectedItem+"' directory");
                     System.out.println
                             ("Changing to '"+selectedItem+"' directory");
+                    files = newClient.listFile();
+
+                    // Create fileModel and fileTable with attributes
+                    fileModel = new MyTableModel(files,columnNames);
+                    fileTable = new JTable(fileModel);
+                    fileTable.setRowSelectionAllowed(true);
+                    fileTable.setColumnSelectionAllowed(false);
+                    fileTable.getSelectionModel().addListSelectionListener
+                            (new fileSelectionListener());
+                    fileModel.setEditable(false);
+                    System.out.println("Number of files: " + fileTable.getRowCount());
+                    scroller = new JScrollPane(fileTable);
+
+                    // Reset download panel and add components
+                    downloadPanel.removeAll();
+                    downloadPanel.add(scroller);
+                    downloadPanel.add(cdButton);
+                    downloadPanel.add(Box.createVerticalStrut(5));
+                    downloadPanel.add(downloadButton);
+                    downloadPanel.add(Box.createVerticalStrut(5));
+                    downloadPanel.add(logoutButton);
+                    downloadPanel.addMouseListener(new selectListener());
+                    downloadPanel.setVisible(true);
+                    statusLabel.setText("Connected to " + url);
+                    statusLabel.setIcon(null);
                 }
             }
         }
