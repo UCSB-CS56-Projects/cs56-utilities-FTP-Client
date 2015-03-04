@@ -105,22 +105,27 @@ public class SftpClient extends Client {
 	}
 
 	/**
-	 * Check if the specified filename is actually a file (as opposed to a directory, etc.)
-	 * @param filename filename to check
-	 * @return true if filename is a file, false otherwise
+	 * Check if the specified item is actually a file (as opposed to a directory, etc.)
+	 * @param item item to check
+	 * @return true if item is a file, false otherwise
 	 */
-	public boolean isFile(String filename) {
+	public boolean isFile(String item) {
 		for(ChannelSftp.LsEntry entry : fileList) {
-			if (filename.equals(entry.getFilename()) && !(entry.getAttrs().isDir()) ) {
+			if (item.equals(entry.getFilename()) && !(entry.getAttrs().isDir()) ) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-    public boolean isDir(String filename) {
+    /**
+     * Check if the specified item is a directory
+     * @param item item to check
+     * @return if item is a directory, false otherwise
+     */
+    public boolean isDir(String item) {
         for(ChannelSftp.LsEntry entry : fileList) {
-            if (filename.equals(entry.getFilename()) && (entry.getAttrs().isDir())) {
+            if (item.equals(entry.getFilename()) && (entry.getAttrs().isDir())) {
                 return true;
             }
         }

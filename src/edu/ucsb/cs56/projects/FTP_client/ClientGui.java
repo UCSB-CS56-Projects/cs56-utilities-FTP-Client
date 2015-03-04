@@ -121,6 +121,7 @@ public class ClientGui {
 		frame.setVisible(true);
 		
 		connectButton.addActionListener(login);
+        cdButton.addActionListener(new cdListener());
 		downloadButton.addActionListener(new downloadListener());
 		logoutButton.addActionListener(new logoutListener());
 		
@@ -140,7 +141,7 @@ public class ClientGui {
 			// Get password as char[] from pwField, convert to string
 			password = new String(pwField.getPassword());
 
-			if(newClient.connect(url, password))	{
+			if(newClient.connect(url, password)) {
                 // Draw file interface
 				loginPanel.setVisible(false);
 
@@ -222,6 +223,19 @@ public class ClientGui {
 
     class cdListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
+            System.out.println("cdListener invoked");
+            if(selectedItem !=null) {
+                if ( !(newClient.isDir(selectedItem)) ) {
+                    statusLabel.setText(selectedItem+" is not a directory");
+                }
+                else {
+                    newClient.ChangeDirectory(selectedItem);
+                    statusLabel.setText
+                            ("Changing to '"+selectedItem+"' directory");
+                    System.out.println
+                            ("Changing to '"+selectedItem+"' directory");
+                }
+            }
         }
     }
 	
@@ -232,7 +246,8 @@ public class ClientGui {
 				// Print out message to GUI bar if selection isn't a file
 				if ( !(newClient.isFile(selectedItem)) ) {
 					statusLabel.setText(selectedItem + " is not a file");
-				} else {
+				}
+                else {
 					newClient.download(selectedItem);
 					statusLabel.setText("Downloading " + selectedItem);
 				}

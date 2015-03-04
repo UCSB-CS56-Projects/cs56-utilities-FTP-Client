@@ -40,7 +40,6 @@ public class FtpClient extends Client {
 	 *	Change directory
 	 * 	@param target directory
 	 */
-
 	public void ChangeDirectory(String dir)	{
 		try {
 			client.changeWorkingDirectory(dir);
@@ -51,7 +50,6 @@ public class FtpClient extends Client {
 	/**
 	 *	Show file list on current directory
 	 */
-
 	public Object[][] listFile()	{
 		System.out.println("*************File List************");
 		fileList=null;
@@ -71,16 +69,24 @@ public class FtpClient extends Client {
 	}
 
 	/**
-	 *	Determine if the file is a regular file
+	 *	Determine if the item is a regular file
 	 */
-
-	public boolean isFile(String filename)	{
+	public boolean isFile(String item)	{
 		for(FTPFile f : fileList)
-			if(filename.equals(f.getName())&&f.isFile())
+			if(item.equals(f.getName())&&f.isFile())
 				return true;
 		return false;
-
 	}
+
+    /**
+     * Determine if th eitem is a directory
+     */
+    public boolean isDir(String item) {
+        for(FTPFile f : fileList)
+            if(item.equals(f.getName())&&f.isDirectory())
+                return true;
+        return false;
+    }
 
 	/**
 	 *	Download file user input on current directory.
