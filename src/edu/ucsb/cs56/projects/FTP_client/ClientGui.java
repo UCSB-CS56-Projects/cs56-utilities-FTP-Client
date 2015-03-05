@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import java.awt.BorderLayout;
 import java.awt.event.*;
 
@@ -75,7 +76,7 @@ public class ClientGui {
 		hostField 		= new JTextField(20);
 		pwField         = new JPasswordField(12);
         columnNames     = new String[] {"Permissions","Links","Owner","Group","Size",
-                        "Month","Date","Time/Year","File Name"};
+                        "Month","Date","Time/Year","Item Name"};
 		String[] protocols = {"SFTP://", "FTP://"};
 		protocolList    = new JComboBox(protocols);
 		selectedItem    = null;
@@ -124,8 +125,64 @@ public class ClientGui {
         cdButton.addActionListener(new cdListener());
 		downloadButton.addActionListener(new downloadListener());
 		logoutButton.addActionListener(new logoutListener());
-		
 	}
+
+    public void buildTable () {
+        // Load files from directory
+        files = newClient.listFile();
+
+        // Create fileModel and fileTable with attributes
+        fileModel = new MyTableModel(files,columnNames);
+        fileTable = new JTable(fileModel);
+        fileTable.setRowSelectionAllowed(true);
+        fileTable.setColumnSelectionAllowed(false);
+        fileTable.getSelectionModel().addListSelectionListener
+                (new fileSelectionListener());
+        fileModel.setEditable(false);
+        System.out.println("Number of files: " + fileTable.getRowCount());
+        scroller = new JScrollPane(fileTable);
+
+        // Set size of specific columns
+        TableColumn permColumn  = fileTable.getColumn("Permissions");
+        TableColumn linksColumn = fileTable.getColumn("Links");
+        TableColumn ownerColumn = fileTable.getColumn("Owner");
+        TableColumn groupColumn = fileTable.getColumn("Group");
+        TableColumn sizeColumn  = fileTable.getColumn("Size");
+        TableColumn monthColumn = fileTable.getColumn("Month");
+        TableColumn dateColumn  = fileTable.getColumn("Date");
+        TableColumn timeColumn  = fileTable.getColumn("Time/Year");
+        permColumn.setMinWidth(85);
+        permColumn.setMaxWidth(85);
+        linksColumn.setPreferredWidth(45);
+        linksColumn.setMinWidth(45);
+        linksColumn.setMaxWidth(100);
+        ownerColumn.setPreferredWidth(80);
+        ownerColumn.setMinWidth(80);
+        ownerColumn.setMaxWidth(120);
+        groupColumn.setPreferredWidth(80);
+        groupColumn.setMinWidth(80);
+        groupColumn.setMaxWidth(120);
+        sizeColumn.setPreferredWidth(60);
+        sizeColumn.setMinWidth(60);
+        sizeColumn.setMaxWidth(80);
+        monthColumn.setMinWidth(50);
+        monthColumn.setMaxWidth(50);
+        dateColumn.setMinWidth(50);
+        dateColumn.setMaxWidth(50);
+        timeColumn.setMinWidth(65);
+        timeColumn.setMaxWidth(65);
+
+        // Reset download panel and add components
+        downloadPanel.removeAll();
+        downloadPanel.add(scroller);
+        downloadPanel.add(cdButton);
+        downloadPanel.add(Box.createVerticalStrut(5));
+        downloadPanel.add(downloadButton);
+        downloadPanel.add(Box.createVerticalStrut(5));
+        downloadPanel.add(logoutButton);
+        downloadPanel.addMouseListener(new selectListener());
+        downloadPanel.setVisible(true);
+    }
 	
 	class loginListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
@@ -144,33 +201,9 @@ public class ClientGui {
 			if(newClient.connect(url, password)) {
                 // Draw file interface
 				loginPanel.setVisible(false);
-
-                // Load files from directory
-				files = newClient.listFile();
-
-                // Create fileModel and fileTable with attributes
-                fileModel = new MyTableModel(files,columnNames);
-                fileTable = new JTable(fileModel);
-                fileTable.setRowSelectionAllowed(true);
-                fileTable.setColumnSelectionAllowed(false);
-                fileTable.getSelectionModel().addListSelectionListener
-                        (new fileSelectionListener());
-                fileModel.setEditable(false);
-                System.out.println("Number of files: " + fileTable.getRowCount());
-                scroller = new JScrollPane(fileTable);
-
-                // Reset download panel and add components
-                downloadPanel.removeAll();
-                downloadPanel.add(scroller);
-                downloadPanel.add(cdButton);
-                downloadPanel.add(Box.createVerticalStrut(5));
-                downloadPanel.add(downloadButton);
-                downloadPanel.add(Box.createVerticalStrut(5));
-                downloadPanel.add(logoutButton);
-                downloadPanel.addMouseListener(new selectListener());
-                downloadPanel.setVisible(true);
 				statusLabel.setText("Connected to " + url);
 				statusLabel.setIcon(null);
+                buildTable();
 			}
 			else {
 				// Update statusLabel with an error message and error icon on connection failure
@@ -205,7 +238,7 @@ public class ClientGui {
     }
 
     // selectListener not used for fileTable
-	class selectListener implements MouseListener	{
+	class selectListener implements MouseListener {
 		public void mouseClicked(MouseEvent e)	{
             //System.out.println("selectListener called!");
 			int index = fileTable.rowAtPoint(e.getPoint());
@@ -225,41 +258,22 @@ public class ClientGui {
         public void actionPerformed(ActionEvent e) {
             System.out.println("cdListener invoked");
             String url = hostField.getText();
+            // Check if a selection is made
             if(selectedItem !=null) {
+                // Do nothing if selectedItem is a file
                 if ( !(newClient.isDir(selectedItem)) ) {
                     statusLabel.setText(selectedItem+" is not a directory");
                 }
+                // Otherwise change working directory to selectedItem
                 else {
                     newClient.ChangeDirectory(selectedItem);
                     statusLabel.setText
                             ("Changing to '"+selectedItem+"' directory");
                     System.out.println
                             ("Changing to '"+selectedItem+"' directory");
-                    files = newClient.listFile();
-
-                    // Create fileModel and fileTable with attributes
-                    fileModel = new MyTableModel(files,columnNames);
-                    fileTable = new JTable(fileModel);
-                    fileTable.setRowSelectionAllowed(true);
-                    fileTable.setColumnSelectionAllowed(false);
-                    fileTable.getSelectionModel().addListSelectionListener
-                            (new fileSelectionListener());
-                    fileModel.setEditable(false);
-                    System.out.println("Number of files: " + fileTable.getRowCount());
-                    scroller = new JScrollPane(fileTable);
-
-                    // Reset download panel and add components
-                    downloadPanel.removeAll();
-                    downloadPanel.add(scroller);
-                    downloadPanel.add(cdButton);
-                    downloadPanel.add(Box.createVerticalStrut(5));
-                    downloadPanel.add(downloadButton);
-                    downloadPanel.add(Box.createVerticalStrut(5));
-                    downloadPanel.add(logoutButton);
-                    downloadPanel.addMouseListener(new selectListener());
-                    downloadPanel.setVisible(true);
                     statusLabel.setText("Connected to " + url);
                     statusLabel.setIcon(null);
+                    buildTable();
                 }
             }
         }
