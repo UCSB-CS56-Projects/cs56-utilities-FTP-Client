@@ -17,12 +17,14 @@ import org.apache.commons.net.ftp.FTPConnectionClosedException;
  * @version CS56, W14
  * @author Wenjie Huang
  * @author David Coffill
+ * @author Jeffrey Chen
  */
 
 public class FtpClient extends Client {
 	private FTPClient client;
 	private FTPFile[] fileList;
-	private String[] stringFileList;
+	private String[][] stringFileList;
+    private String delimiters;
 	/** Constructor
 	 */
 	public FtpClient()	{
@@ -38,7 +40,6 @@ public class FtpClient extends Client {
 	 *	Change directory
 	 * 	@param target directory
 	 */
-
 	public void ChangeDirectory(String dir)	{
 		try {
 			client.changeWorkingDirectory(dir);
@@ -49,19 +50,18 @@ public class FtpClient extends Client {
 	/**
 	 *	Show file list on current directory
 	 */
-
-	public String[] listFile()	{
+	public Object[][] listFile()	{
 		System.out.println("*************File List************");
 		fileList=null;
 		stringFileList=null;
+        delimiters = "[ ]+";
 		try {
 			FTPFile[] fileList = client.listFiles();
-			stringFileList = new String[fileList.length];
-			//fileList = client.listFiles();
-			for (int i = 0; i < fileList.length; ++i) {
-				stringFileList[i] = fileList[i].toString();
-				System.out.println(stringFileList[i]);
+			stringFileList = new String[fileList.length][9];
 
+			for (int i = 0; i < fileList.length; ++i) {
+				stringFileList[i] = fileList[i].toString().split(delimiters);
+                System.out.println(stringFileList[i][8]);
 			}
 		}
 		catch (IOException e)	{}
@@ -69,16 +69,24 @@ public class FtpClient extends Client {
 	}
 
 	/**
-	 *	Determine if the file is a regular file
+	 *	Determine if the item is a regular file
 	 */
-
-	public boolean isFile(String filename)	{
+	public boolean isFile(String item)	{
 		for(FTPFile f : fileList)
-			if(filename.equals(f.getName())&&f.isFile())
+			if(item.equals(f.getName())&&f.isFile())
 				return true;
 		return false;
-
 	}
+
+    /**
+     * Determine if th eitem is a directory
+     */
+    public boolean isDir(String item) {
+        for(FTPFile f : fileList)
+            if(item.equals(f.getName())&&f.isDirectory())
+                return true;
+        return false;
+    }
 
 	/**
 	 *	Download file user input on current directory.
@@ -167,7 +175,7 @@ public class FtpClient extends Client {
 		char[] password = c.readPassword("Input your password (press Enter for none): ");
 
 		newClient.connect(url, new String(password));
-		String[] f = newClient.listFile();
+		Object[][] f = newClient.listFile();
 		System.out.println("input file to download:");
 		sc = new Scanner (System.in);
 		String input = sc.nextLine();
