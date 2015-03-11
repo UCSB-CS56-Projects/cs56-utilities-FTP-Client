@@ -23,7 +23,7 @@ public class ClientGui {
 	private JPanel loginPanel;
 	private JPanel downloadPanel;
 	private JButton connectButton;
-    private JButton cdButton;
+	private JButton cdButton;
 	private JButton downloadButton;
 	private JButton logoutButton;
 	private JLabel	hostLabel;
@@ -267,11 +267,9 @@ public class ClientGui {
                 // Otherwise change working directory to selectedItem
                 else {
                     newClient.ChangeDirectory(selectedItem);
-                    statusLabel.setText
-                            ("Changing to '"+selectedItem+"' directory");
                     System.out.println
                             ("Changing to '"+selectedItem+"' directory");
-                    statusLabel.setText("Connected to " + url);
+                    statusLabel.setText(statusLabel.getText()+"/"+selectedItem);
                     statusLabel.setIcon(null);
                     buildTable();
                 }
