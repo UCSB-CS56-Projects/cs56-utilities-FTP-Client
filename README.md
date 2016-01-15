@@ -4,7 +4,7 @@ utilities-FTP-Client
 project history
 ===============
 ```
- W14 | andrewberls 5pm | dcoffill | A FTP client which can connect to a server, download files from server and save it on local
+W16
 ```
 
 An FTP client that supports FTP and SFTP (file transfer over SSH) protocols.  The client can connect to an FTP/SFTP server and download files from the root directory.
