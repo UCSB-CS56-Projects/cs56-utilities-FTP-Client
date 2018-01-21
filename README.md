@@ -50,8 +50,12 @@ New protocols can be easily implemented by extending and implementing each of Cl
 
 All GUI code is located in ClientGui, while FtpClient and SftpClient each contain their own CLI main methods (that could probably be consolidated in to one CLI class in the future).
 
-Note that this program currently does not support switching directories (though the code should be in place to do so with minor modification).
-
 Building
 --------
 To build this application, simply run `ant compile` from the project's root directory and it will compile all source files.
+
+FTP server for testing
+----------------------
+To run a simple FTP server to test this client with, you should use the one from the [http://twistedmatrix.com/trac/](twisted) library.
+Install it with `pip install --user twisted` and then run the server with `twistd -n ftp --auth anonymous -r .` to serve the current directory on port 2121 with username "anonymous" and an empty password.
+
