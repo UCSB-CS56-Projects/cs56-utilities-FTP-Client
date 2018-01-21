@@ -43,16 +43,22 @@ public abstract class Client {
 	 * List all files in current directory
 	 * @return String array of file names
 	 */
-	public abstract String[] listFile();
+	public abstract Object[][] listFile();
 
 
 	/**
-	 * Determine if the file is a regular file
-	 * @param filename file's name
-	 * @return true if filename is a file, false if it's a directory
+	 * Determine if the item is a regular file
+	 * @param item file's name
+	 * @return true if item is a file, false if it's a directory
 	 */
-	public abstract boolean isFile(String filename);
+	public abstract boolean isFile(String item);
 
+    /**
+     * Determine if the item is a directory
+     * @param item item's name
+     * @return true if item is a directory, false otherwise
+     */
+    public abstract boolean isDir(String item);
 
 	/**
 	*	Download file user input on current directory.

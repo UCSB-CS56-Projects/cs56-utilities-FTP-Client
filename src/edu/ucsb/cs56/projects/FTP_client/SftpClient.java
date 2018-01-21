@@ -10,17 +10,20 @@ import java.util.Vector;
 /**
  * A class to support the SFTP protocol
  * @author David Coffill
+ * @author Jeffrey Chen
  */
 public class SftpClient extends Client {
 	private JSch client;
 	ChannelSftp cSftp;
 	private Vector<ChannelSftp.LsEntry> fileList;
-	private String[] stringFileList;
+	private String[][] stringFileList;
+    private String delimiters;
+    private String[] temp;
 
 	public SftpClient() {
 		client = new JSch();
 		fileList = null;
-		stringFileList = null;
+		//stringFileList = null;
 		port = 22; // Set default SSH/SFTP port number
 	}
 
@@ -28,19 +31,21 @@ public class SftpClient extends Client {
 	 * List all files in current directory, including attributes, to both stdout and stringFileList
 	 * @return String array of file names
 	 */
-	public String[] listFile() {
-		System.out.println("*************File List************");
-		fileList=null;
-		stringFileList=null;
+	public Object[][] listFile() {
+        System.out.println("*************File List************");
+        fileList=null;
+        stringFileList=null;
+        delimiters = "[ ]+";
 		try {
 			fileList = cSftp.ls(".");
-
 			int size = fileList.size();
-			stringFileList = new String[size];
-			for (int i = 0; i < size; ++i) {
-				stringFileList[i] = fileList.get(i).toString();
-				System.out.println(stringFileList[i]);
+            stringFileList = new String[size][9];
+            temp = new String[size];
 
+            for (int i = 0; i < size; ++i) {
+                temp[i] = fileList.get(i).toString();
+				stringFileList[i] = temp[i].split(delimiters);
+                System.out.println(stringFileList[i][8]);
 			}
 		}
 		catch (SftpException ex) {
@@ -100,19 +105,32 @@ public class SftpClient extends Client {
 	}
 
 	/**
-	 * Check if the specified filename is actually a file (as opposed to a directory, etc.)
-	 * @param filename filename to check
-	 * @return true if filename is a file, false otherwise
+	 * Check if the specified item is actually a file (as opposed to a directory, etc.)
+	 * @param item item to check
+	 * @return true if item is a file, false otherwise
 	 */
-	public boolean isFile(String filename) {
+	public boolean isFile(String item) {
 		for(ChannelSftp.LsEntry entry : fileList) {
-			if (filename.equals(entry.getFilename()) && !(entry.getAttrs().isDir()) ) {
+			if (item.equals(entry.getFilename()) && !(entry.getAttrs().isDir()) ) {
 				return true;
 			}
 		}
-
 		return false;
 	}
+
+    /**
+     * Check if the specified item is a directory
+     * @param item item to check
+     * @return if item is a directory, false otherwise
+     */
+    public boolean isDir(String item) {
+        for(ChannelSftp.LsEntry entry : fileList) {
+            if (item.equals(entry.getFilename()) && (entry.getAttrs().isDir())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 	/**
 	 * Download a file from the remote host to the current directory on the local machine
@@ -163,7 +181,7 @@ public class SftpClient extends Client {
 
 		newClient.connect(url, new String(password));
 
-		String[] f = newClient.listFile();
+		Object[] f = newClient.listFile();
 		System.out.println("input file to download:");
 		String input = sc.nextLine();
 		newClient.download(input);
