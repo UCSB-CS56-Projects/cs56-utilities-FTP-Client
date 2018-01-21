@@ -56,7 +56,7 @@ public class FtpClient extends Client {
 		stringFileList=null;
         delimiters = "[ ]+";
 		try {
-			FTPFile[] fileList = client.listFiles();
+			fileList = client.listFiles();
 			stringFileList = new String[fileList.length][9];
 
 			for (int i = 0; i < fileList.length; ++i) {
