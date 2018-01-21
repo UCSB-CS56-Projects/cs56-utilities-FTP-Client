@@ -56,6 +56,6 @@ To build this application, simply run `ant compile` from the project's root dire
 
 FTP server for testing
 ----------------------
-To run a simple FTP server to test this client with, you should use the one from the [http://twistedmatrix.com/trac/](twisted) library.
+To run a simple FTP server to test this client with, you should use the one from the [twisted](http://twistedmatrix.com/trac/) library.
 Install it with `pip install --user twisted` and then run the server with `twistd -n ftp --auth anonymous -r .` to serve the current directory on port 2121 with username "anonymous" and an empty password.
 
