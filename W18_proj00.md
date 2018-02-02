@@ -29,7 +29,7 @@
   
 ## f
 
-  This project is run by Ant. The build.xml is fine. No description should be added. (CHecked by ant -p)
+  This project is run by Ant. The build.xml is fine. No description should be added. (Checked by ant -p)
   
 
 
