@@ -38,10 +38,10 @@
   
 ## g
 
-  There are four issues, which is not enough to earn 1000 points. One of the issues: "GUI file list columns are inconsistent" is not clear, but others are fine.
+  There are four issues, which is probably not enough to earn points1000. One of the issues: "GUI file list columns are inconsistent" is not clear, but others are fine.
   
 ## h
-  
+  We didn't add any issues.
 
 ## i
 
